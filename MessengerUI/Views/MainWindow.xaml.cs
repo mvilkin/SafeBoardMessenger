@@ -12,24 +12,16 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace MessengerUI
+namespace MessengerUI.Views
 {
     /// <summary>
-    /// Interaction logic for LoginWindow.xaml
+    /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class LoginWindow : Window
+    public partial class MainWindow : Window
     {
-        public LoginWindow()
+        public MainWindow()
         {
             InitializeComponent();
-        }
-
-        private void Click_Login(object sender, RoutedEventArgs e)
-        {
-            ChatWindow chatWindow = new ChatWindow();
-            chatWindow.Show();
-            this.Owner = chatWindow;
-            this.Hide();
         }
     }
 }

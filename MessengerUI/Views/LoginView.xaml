@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="MessengerUI.Views.LoginView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"  
+             xmlns:prism="http://prismlibrary.com/"
+             prism:ViewModelLocator.AutoWireViewModel="True"
+             mc:Ignorable="d" 
+             d:DesignHeight="387" d:DesignWidth="528">
+    <Grid>
+        <Grid Margin="31,0,29,23" Background="White" Height="264" VerticalAlignment="Bottom">
+            <TextBlock Height="40" Width="110" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0" Name="TextBlockHeading" Text="Login:" TextAlignment="Center" FontSize="23" FontStretch="ExtraCondensed"/>
+            <TextBlock Height="23" HorizontalAlignment="Left" Margin="67,90,0,0" Name="TextBlockName" Text="Name:" VerticalAlignment="Top" Width="110" />
+            <TextBox Height="23" HorizontalAlignment="Left" Margin="183,90,0,0" Name="TextBoxName" Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="222" />
+
+            <TextBlock Height="23" HorizontalAlignment="Left" Margin="67,150,0,0" Name="TextBlockPassword" Text="Server:" VerticalAlignment="Top" Width="110"  />
+            <TextBox Height="23" HorizontalAlignment="Left" Margin="183,150,0,0" Name="TextBoxPassword" Text="{Binding Server, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="222" />
+
+            <Button Content="Enter" Height="23" HorizontalAlignment="Right" Margin="0,200,100,0" Name="ButtonEnterChat" VerticalAlignment="Top" Width="70" Command="{Binding EnterChatCommand}" />
+        </Grid>
+    </Grid>
+</UserControl>

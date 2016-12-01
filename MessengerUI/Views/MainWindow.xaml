@@ -1,0 +1,23 @@
+﻿<Window x:Class="MessengerUI.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:prism="http://prismlibrary.com/"
+        prism:ViewModelLocator.AutoWireViewModel="True"
+        Title="MainWindow" 
+        Height="387" MinHeight="387" MaxHeight="387"
+        Width="528" MinWidth="528" MaxWidth="528">
+    
+    <Grid Background="Bisque">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal">
+            <Button Content="LoginView" Margin="5" Command="{Binding NavigateCommand}" CommandParameter="LoginView"/>
+            <Button Content="ChatView" Margin="5" Command="{Binding NavigateCommand}" CommandParameter="ChatView"/>
+        </StackPanel>
+
+        <ContentControl Grid.Row="1" prism:RegionManager.RegionName="ContentRegion"/>
+    </Grid>
+</Window>

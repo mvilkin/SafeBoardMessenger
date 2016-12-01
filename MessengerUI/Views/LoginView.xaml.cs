@@ -13,24 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace MessengerUI
+namespace MessengerUI.Views
 {
     /// <summary>
-    /// Interaction logic for ChatWindow.xaml
+    /// Interaction logic for LoginView.xaml
     /// </summary>
-    public partial class ChatWindow : Window
+    public partial class LoginView : UserControl
     {
-        public ChatWindow()
+        public LoginView()
         {
             InitializeComponent();
-
-            string[] users = { "User1", "User2", "User3", "User4" };
-            list.ItemsSource = users;
-        }
-
-        private void Click_Send(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Button pressed");
         }
     }
 }
