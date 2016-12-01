@@ -19,7 +19,7 @@
             <TextBlock Height="23" HorizontalAlignment="Left" Margin="67,140,0,0" Name="textBlockPasswordConfirm" Text="ConfirmPassword:" VerticalAlignment="Top" Width="110" Grid.RowSpan="2" />
             <PasswordBox Height="23" HorizontalAlignment="Left" Margin="183,140,0,0" Name="textBoxPasswordConfirm" VerticalAlignment="Top" Width="222" />
 
-            <Button Content="Login" Height="23" HorizontalAlignment="Right" Margin="0,200,100,0" Name="buttonLogin" VerticalAlignment="Top" Width="70" Click="Login_Click" />
+            <Button Content="Login" Height="23" HorizontalAlignment="Right" Margin="0,200,100,0" Name="buttonLogin" VerticalAlignment="Top" Width="70" Click="Click_Login" />
         </Grid>
     </Grid>
 </Window>

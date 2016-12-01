@@ -24,9 +24,12 @@ namespace MessengerUI
             InitializeComponent();
         }
 
-        private void Login_Click(object sender, RoutedEventArgs e)
+        private void Click_Login(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Login_Click pressed");
+            ChatWindow chatWindow = new ChatWindow();
+            chatWindow.Show();
+            this.Owner = chatWindow;
+            this.Hide();
         }
     }
 }

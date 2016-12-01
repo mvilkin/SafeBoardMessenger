@@ -16,16 +16,19 @@ using System.Windows.Shapes;
 namespace MessengerUI
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for ChatWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class ChatWindow : Window
     {
-        public MainWindow()
+        public ChatWindow()
         {
             InitializeComponent();
+
+            string[] users = { "User1", "User2", "User3", "User4" };
+            list.ItemsSource = users;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Click_Send(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Button pressed");
         }
