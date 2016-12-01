@@ -4,13 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using MessengerUI.Events;
 using Prism.Commands;
+using Prism.Events;
 using Prism.Mvvm;
 
 namespace MessengerUI.ViewModels
 {
     public class LoginViewModel : BindableBase
     {
+        private readonly IEventAggregator _eventAggregator;
+
         private string _login = "MyName";
         public string Login
         {
@@ -27,9 +31,10 @@ namespace MessengerUI.ViewModels
 
         public ICommand EnterChatCommand { get; set; }
 
-        public LoginViewModel()
+        public LoginViewModel(IEventAggregator eventAggregator)
         {
-            EnterChatCommand = new DelegateCommand(PerformEnter, CanEnter).ObservesProperty(() => Login).ObservesProperty((() => Server));
+            _eventAggregator = eventAggregator;
+            EnterChatCommand = new DelegateCommand(PerformEnter, CanEnter).ObservesProperty(() => Login).ObservesProperty(() => Server);
         }
 
         private bool CanEnter()
@@ -39,7 +44,7 @@ namespace MessengerUI.ViewModels
 
         private void PerformEnter()
         {
-            Login = "Perform";
+            _eventAggregator.GetEvent<EnterChatEvent>().Publish(true);
         }
     }
 }

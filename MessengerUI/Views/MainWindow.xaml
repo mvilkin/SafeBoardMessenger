@@ -7,6 +7,10 @@
         Height="387" MinHeight="387" MaxHeight="387"
         Width="528" MinWidth="528" MaxWidth="528">
     
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </Window.Resources>
+    
     <Grid Background="Bisque">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -14,9 +18,11 @@
         </Grid.RowDefinitions>
 
         <StackPanel Orientation="Horizontal">
-            <Button Content="LoginView" Margin="5" Command="{Binding NavigateCommand}" CommandParameter="LoginView"/>
-            <Button Content="ChatView" Margin="5" Command="{Binding NavigateCommand}" CommandParameter="ChatView"/>
+            <Button Content="Back" Margin="5" Command="{Binding BackButtonClickCommand}" Visibility="{Binding BackButtonVisibility, Converter={StaticResource BoolToVis}}" />
         </StackPanel>
+
+        <TextBlock Grid.Row="1" Height="50" Width="300" Text="Welcome to Messegner" FontSize="25" Margin="0,-100,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center" Visibility="{Binding HelloViewVisibility, Converter={StaticResource BoolToVis}}" />
+        <Button Grid.Row="1" Height="50" Width="150" Content="Enter" FontSize="22" Margin="0,100,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" Command="{Binding EnterMessengerCommand}" Visibility="{Binding HelloViewVisibility, Converter={StaticResource BoolToVis}}" />
 
         <ContentControl Grid.Row="1" prism:RegionManager.RegionName="ContentRegion"/>
     </Grid>
