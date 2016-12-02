@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MessengerBase", "MessengerBase\MessengerBase.vcxproj", "{8F3E602C-D123-4C7E-AE2C-F3A1D7CFCAA3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MessengerUI", "MessengerUI\MessengerUI.csproj", "{877B3D8A-8512-45AC-80E8-1801350E0170}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8F3E602C-D123-4C7E-AE2C-F3A1D7CFCAA3} = {8F3E602C-D123-4C7E-AE2C-F3A1D7CFCAA3}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

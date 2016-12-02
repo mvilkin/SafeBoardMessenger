@@ -9,9 +9,8 @@
 
 extern "C"
 {
-	MSGBASE_API int GetInteger();
-	MSGBASE_API void GetIntegerArg(int* value);
-	MSGBASE_API void GetString(char* buffer);
+	MSGBASE_API int GetOnlineUsersStringSize();
+	MSGBASE_API void GetOnlineUsersString(char* usersString);
 }
 
 #endif // _MSGBASE_TEST_H_

@@ -22,7 +22,7 @@ namespace MessengerUI.ViewModels
             set { SetProperty(ref _login, value); }
         }
 
-        private string _server;
+        private string _server = "MyServer";
         public string Server
         {
             get { return _server; }

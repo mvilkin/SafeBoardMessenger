@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using MessengerUI.Controls;
 using MessengerUI.Events;
 using Prism.Commands;
 using Prism.Events;
@@ -20,11 +21,18 @@ namespace MessengerUI.ViewModels
             set { SetProperty(ref _textMessage, value); }
         }
 
-        private string[] _onlineUsers;
-        public string[] OnlineUsers
+        private OnlineUsersControl _onlineUsersCtrl;
+        public OnlineUsersControl OnlineUsersCtrl
         {
-            get { return _onlineUsers; }
-            set { SetProperty(ref _onlineUsers, value); }
+            get { return _onlineUsersCtrl; }
+            set { SetProperty(ref _onlineUsersCtrl, value); }
+        }
+
+        private int _selectedUser = -1;
+        public int SelectedUser
+        {
+            get { return _selectedUser; }
+            set { SetProperty(ref _selectedUser, value); }
         }
 
         public ICommand SendCommand { get; set; }
@@ -32,6 +40,8 @@ namespace MessengerUI.ViewModels
 
         public ChatViewModel(IEventAggregator eventAggregator)
         {
+            OnlineUsersCtrl = new OnlineUsersControl();
+
             SendCommand = new DelegateCommand(PerformSend, CanSend).ObservesProperty(() => TextMessage);
             UpdateUsersCommand = new DelegateCommand(PerformUpdateUsers);
 
@@ -45,9 +55,8 @@ namespace MessengerUI.ViewModels
 
         private void PerformUpdateUsers()
         {
-            string[] users = {"User1", "User2"};
-            OnlineUsers = users;
-            TextMessage = "Update";
+            OnlineUsersCtrl.Update();
+            SelectedUser = -1;
         }
 
         private void PerformSend()

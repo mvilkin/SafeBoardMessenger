@@ -1,18 +1,14 @@
 #include "Test.h"
+#include <string>
 
-int GetInteger()
+int GetOnlineUsersStringSize()
 {
-	return 123;
+	return std::string("User1;User2;User3").length() + 1;
 }
 
-void GetIntegerArg(int* value)
+void GetOnlineUsersString(char* usersString)
 {
-	if (value)
-		*value = 12;
-}
-
-void GetString(char* buffer)
-{
-	if (buffer)
-		*buffer = 'a';
+	int len = std::string("User1;User2;User3").length();
+	memset(usersString, 0, len + 1);
+	memcpy(usersString, "User1;User2;User3", len);
 }
