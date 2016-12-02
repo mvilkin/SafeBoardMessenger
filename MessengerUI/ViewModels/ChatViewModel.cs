@@ -13,19 +13,29 @@ namespace MessengerUI.ViewModels
 {
     public class ChatViewModel : BindableBase
     {
-        private string _textMessage = "MyName";
+        private string _textMessage;
         public string TextMessage
         {
             get { return _textMessage; }
             set { SetProperty(ref _textMessage, value); }
         }
 
-        public ICommand PerformSendCommand { get; set; }
+        private string[] _onlineUsers;
+        public string[] OnlineUsers
+        {
+            get { return _onlineUsers; }
+            set { SetProperty(ref _onlineUsers, value); }
+        }
+
+        public ICommand SendCommand { get; set; }
+        public ICommand UpdateUsersCommand { get; set; }
 
         public ChatViewModel(IEventAggregator eventAggregator)
         {
-            PerformSendCommand = new DelegateCommand(PerformSend, CanSend).ObservesProperty(() => TextMessage);
-            eventAggregator.GetEvent<EnterChatEvent>().Subscribe(UpdateTextMessage);
+            SendCommand = new DelegateCommand(PerformSend, CanSend).ObservesProperty(() => TextMessage);
+            UpdateUsersCommand = new DelegateCommand(PerformUpdateUsers);
+
+            eventAggregator.GetEvent<EnterChatEvent>().Subscribe(EnterChatEventHandler);
         }
 
         private bool CanSend()
@@ -33,14 +43,21 @@ namespace MessengerUI.ViewModels
             return !String.IsNullOrWhiteSpace(TextMessage);
         }
 
-        private void PerformSend()
+        private void PerformUpdateUsers()
         {
-            TextMessage = "Perform";
+            string[] users = {"User1", "User2"};
+            OnlineUsers = users;
+            TextMessage = "Update";
         }
 
-        private void UpdateTextMessage(bool obj)
+        private void PerformSend()
         {
-            TextMessage = "123dw";
+            TextMessage = "Send";
+        }
+
+        private void EnterChatEventHandler(EnterChatEventData eventData)
+        {
+            TextMessage = "Login: " + eventData.Login + "\nServer: " + eventData.Server;
         }
     }
 }

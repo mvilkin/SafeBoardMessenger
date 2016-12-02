@@ -7,7 +7,13 @@ using Prism.Events;
 
 namespace MessengerUI.Events
 {
-    public class EnterChatEvent : PubSubEvent<bool>
+    public class EnterChatEvent : PubSubEvent<EnterChatEventData>
     {
+    }
+
+    public class EnterChatEventData
+    {
+        public string Login { get; set; }
+        public string Server { get; set; }
     }
 }

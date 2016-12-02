@@ -44,7 +44,12 @@ namespace MessengerUI.ViewModels
 
         private void PerformEnter()
         {
-            _eventAggregator.GetEvent<EnterChatEvent>().Publish(true);
+            var eventData = new EnterChatEventData
+            {
+                Login = Login,
+                Server = Server
+            };
+            _eventAggregator.GetEvent<EnterChatEvent>().Publish(eventData);
         }
     }
 }

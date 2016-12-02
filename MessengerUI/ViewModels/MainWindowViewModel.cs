@@ -31,9 +31,7 @@ namespace MessengerUI.ViewModels
         private readonly IRegionManager _regionManager;
 
         public DelegateCommand<string> NavigateCommand { get; set; }
-
         public ICommand EnterMessengerCommand { get; set; }
-
         public ICommand BackButtonClickCommand { get; set; }
 
         public MainWindowViewModel(IRegionManager regionManager, IEventAggregator eventAggregator)
@@ -58,7 +56,7 @@ namespace MessengerUI.ViewModels
             BackButtonVisibility = false;
         }
 
-        private void EnterChatEventHandler(bool obj)
+        private void EnterChatEventHandler(EnterChatEventData eventData)
         {
             BackButtonVisibility = true;
             Navigate("ChatView");
@@ -67,6 +65,7 @@ namespace MessengerUI.ViewModels
         private void PerformEnterMessenger()
         {
             HelloViewVisibility = false;
+            Navigate("ChatView");
             Navigate("LoginView");
         }
     }
