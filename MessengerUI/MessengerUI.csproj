@@ -102,6 +102,8 @@
     </ApplicationDefinition>
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Controls\OnlineUsersControl.cs" />
+    <Compile Include="Controls\RecvMessageControl.cs" />
+    <Compile Include="Controls\SendMessageControl.cs" />
     <Compile Include="Events\EnterChatEvent.cs" />
     <Compile Include="ViewModels\ChatViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />

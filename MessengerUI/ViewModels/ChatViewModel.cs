@@ -28,6 +28,20 @@ namespace MessengerUI.ViewModels
             set { SetProperty(ref _onlineUsersCtrl, value); }
         }
 
+        private SendMessageControl _sendMessageCtrl;
+        public SendMessageControl SendMessageCtrl
+        {
+            get { return _sendMessageCtrl; }
+            set { SetProperty(ref _sendMessageCtrl, value); }
+        }
+
+        private RecvMessageControl _recvMessageCtrl;
+        public RecvMessageControl RecvMessageCtrl
+        {
+            get { return _recvMessageCtrl; }
+            set { SetProperty(ref _recvMessageCtrl, value); }
+        }
+
         private int _selectedUser = -1;
         public int SelectedUser
         {
@@ -35,14 +49,16 @@ namespace MessengerUI.ViewModels
             set { SetProperty(ref _selectedUser, value); }
         }
 
-        public ICommand SendCommand { get; set; }
+        public ICommand SendMessageCommand { get; set; }
         public ICommand UpdateUsersCommand { get; set; }
 
         public ChatViewModel(IEventAggregator eventAggregator)
         {
             OnlineUsersCtrl = new OnlineUsersControl();
+            SendMessageCtrl = new SendMessageControl();
+            RecvMessageCtrl = new RecvMessageControl();
 
-            SendCommand = new DelegateCommand(PerformSend, CanSend).ObservesProperty(() => TextMessage);
+            SendMessageCommand = new DelegateCommand(PerformSend, CanSend).ObservesProperty(() => TextMessage);
             UpdateUsersCommand = new DelegateCommand(PerformUpdateUsers);
 
             eventAggregator.GetEvent<EnterChatEvent>().Subscribe(EnterChatEventHandler);
@@ -61,7 +77,8 @@ namespace MessengerUI.ViewModels
 
         private void PerformSend()
         {
-            TextMessage = "Send";
+            SendMessageCtrl.Send();
+            RecvMessageCtrl.Receive();
         }
 
         private void EnterChatEventHandler(EnterChatEventData eventData)

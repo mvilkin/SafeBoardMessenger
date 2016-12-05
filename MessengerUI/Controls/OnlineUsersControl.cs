@@ -11,9 +11,9 @@ namespace MessengerUI.Controls
     public class OnlineUsersControl : BindableBase
     {
         [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int GetOnlineUsersStringSize();
+        public static extern void GetOnlineUsersString(StringBuilder users, ref int usersSize);
         [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void GetOnlineUsersString(StringBuilder users);
+        public static extern void AddCli();
 
         private string[] _onlineUsers;
         public string[] OnlineUsers
@@ -24,9 +24,11 @@ namespace MessengerUI.Controls
 
         public void Update()
         {
-            var onlineUsersStringSize = GetOnlineUsersStringSize();
+            AddCli();
+            int onlineUsersStringSize = 0;
+            GetOnlineUsersString(null, ref onlineUsersStringSize);
             var onlineUsers = new StringBuilder(onlineUsersStringSize);
-            GetOnlineUsersString(onlineUsers);
+            GetOnlineUsersString(onlineUsers, ref onlineUsersStringSize);
             OnlineUsers = onlineUsers.ToString().Split(';').ToArray();
         }
     }
