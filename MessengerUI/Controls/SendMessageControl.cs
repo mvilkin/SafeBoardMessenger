@@ -22,12 +22,17 @@ namespace MessengerUI.Controls
             set { SetProperty(ref _text, value); }
         }
 
+        private string _recipient;
+        public string Recipient
+        {
+            get { return _recipient; }
+            set { SetProperty(ref _recipient, value); }
+        }
+
         public void Send()
         {
             AddCli();
-            var msgTo = new StringBuilder("add");
-            var msgText = new StringBuilder(Text);
-            SendMessage(msgTo, msgText);
+            SendMessage(new StringBuilder(Recipient), new StringBuilder(Text));
         }
     }
 }

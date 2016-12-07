@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,7 +33,22 @@ namespace MessengerUI.ViewModels
         public SendMessageControl SendMessageCtrl
         {
             get { return _sendMessageCtrl; }
-            set { SetProperty(ref _sendMessageCtrl, value); }
+            set
+            {
+                if (_sendMessageCtrl != null)
+                    _sendMessageCtrl.PropertyChanged -= foo;
+
+                SetProperty(ref _sendMessageCtrl, value);
+
+                if (_sendMessageCtrl != null)
+                    _sendMessageCtrl.PropertyChanged += foo;
+            }
+        }
+        private void foo(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        {
+            var sendMessageDelegateCommand = SendMessageCommand as DelegateCommand;
+            if (sendMessageDelegateCommand != null)
+                sendMessageDelegateCommand.RaiseCanExecuteChanged();
         }
 
         private RecvMessageControl _recvMessageCtrl;
@@ -59,7 +75,7 @@ namespace MessengerUI.ViewModels
             RecvMessageCtrl = new RecvMessageControl();
             LoginCtrl = new LoginControl();
 
-            SendMessageCommand = new DelegateCommand(PerformSend, CanSend);
+            SendMessageCommand = new DelegateCommand(PerformSend, CanSend).ObservesProperty(() => SelectedUser);
             UpdateUsersCommand = new DelegateCommand(PerformUpdateUsers);
 
             eventAggregator.GetEvent<EnterChatEvent>().Subscribe(EnterChatEventHandler);
@@ -67,7 +83,7 @@ namespace MessengerUI.ViewModels
 
         private bool CanSend()
         {
-            return !String.IsNullOrWhiteSpace(SendMessageCtrl.Text);
+            return !String.IsNullOrWhiteSpace(SendMessageCtrl.Text) && SelectedUser >= 0;
         }
 
         private void PerformUpdateUsers()
@@ -78,7 +94,11 @@ namespace MessengerUI.ViewModels
 
         private void PerformSend()
         {
+            SendMessageCtrl.Recipient = OnlineUsersCtrl.OnlineUsers[SelectedUser];
             SendMessageCtrl.Send();
+
+            System.Threading.Thread.Sleep(1000);
+
             RecvMessageCtrl.Receive();
         }
 
