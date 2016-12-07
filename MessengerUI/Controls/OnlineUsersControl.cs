@@ -12,8 +12,6 @@ namespace MessengerUI.Controls
     {
         [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void GetOnlineUsersString(StringBuilder users, ref int usersSize);
-        [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void AddCli();
 
         private string[] _onlineUsers;
         public string[] OnlineUsers
@@ -24,7 +22,6 @@ namespace MessengerUI.Controls
 
         public void Update()
         {
-            AddCli();
             int onlineUsersStringSize = 0;
             GetOnlineUsersString(null, ref onlineUsersStringSize);
             var onlineUsers = new StringBuilder(onlineUsersStringSize);

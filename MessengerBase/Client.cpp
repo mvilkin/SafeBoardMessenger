@@ -1,7 +1,9 @@
 #include "Client.h"
 
+
 Client::Client(const std::string& id) :
-	m_ready(false)
+	m_ready(false),
+	m_user_ready(false)
 {
 	messenger::MessengerSettings settings;
 	settings.serverUrl = "127.0.0.1";
@@ -29,7 +31,7 @@ void Client::SendMessage(std::string user, std::string msg)
 	messenger::MessageContent message;
 	message.type = messenger::message_content_type::Text;
 	std::copy(msg.begin(), msg.end(), std::back_inserter(message.data));
-	m_messenger->SendMessage(user + "@localhost", message);
+	m_messenger->SendMessage(user, message);
 }
 
 std::string Client::ReceiveMessage()
@@ -47,8 +49,16 @@ std::string Client::ReceiveMessage()
 
 messenger::UserList Client::GetActiveUsers(bool update)
 {
+	std::unique_lock<std::mutex> lock(m_mutex);
+	m_userList.clear();
 	m_messenger->RequestActiveUsers(this);
-	return m_userList.get_future().get();
+
+	while (m_userList.empty())
+	{
+		m_cv.wait(lock);
+	}
+
+	return m_userList;
 }
 
 void Client::OnOperationResult(messenger::operation_result::Type result)
@@ -60,7 +70,9 @@ void Client::OnOperationResult(messenger::operation_result::Type result)
 
 void Client::OnOperationResult(messenger::operation_result::Type result, const messenger::UserList& users)
 {
-	m_userList.set_value(users);
+	std::unique_lock<std::mutex> lock(m_mutex);
+	m_userList = users;
+	m_cv.notify_all();
 }
 
 void Client::OnMessageStatusChanged(const messenger::MessageId& msgId, messenger::message_status::Type status)

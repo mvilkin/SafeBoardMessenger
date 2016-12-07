@@ -11,7 +11,9 @@ namespace MessengerUI.Controls
     public class SendMessageControl : BindableBase
     {
         [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SendMessage(StringBuilder to, StringBuilder text);
+        public static extern void SendMessage(StringBuilder recipient, StringBuilder text);
+        [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void AddCli();
 
         private string _text;
         public string Text
@@ -20,11 +22,17 @@ namespace MessengerUI.Controls
             set { SetProperty(ref _text, value); }
         }
 
+        private string _recipient = "add";
+        public string Recipient
+        {
+            get { return _recipient; }
+            set { SetProperty(ref _recipient, value); }
+        }
+
         public void Send()
         {
-            var msgTo = new StringBuilder("add");
-            var msgText = new StringBuilder(Text);
-            SendMessage(msgTo, msgText);
+            AddCli();
+            SendMessage(new StringBuilder(Recipient), new StringBuilder(Text));
         }
     }
 }

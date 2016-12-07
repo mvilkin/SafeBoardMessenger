@@ -24,7 +24,8 @@ private:
 	std::condition_variable m_cv;
 	bool m_ready;
 	std::string m_receivedMsg;
-	std::promise<messenger::UserList> m_userList;
+	bool m_user_ready;
+	messenger::UserList m_userList;
 };
 
 #endif // _MESSENGERBASE_CLIENT_H_

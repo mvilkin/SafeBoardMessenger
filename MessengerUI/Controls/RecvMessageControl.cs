@@ -25,7 +25,7 @@ namespace MessengerUI.Controls
         {
             var text = new StringBuilder(50);
             RecvMessage(text);
-            Text = text.ToString();
+            Text += text + "\n";
         }
     }
 }

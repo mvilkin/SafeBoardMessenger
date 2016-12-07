@@ -1,12 +1,19 @@
 #include "ClientInterface.h"
 #include "Client.h"
 
-static Client* its_me = NULL;
-static Client* add = NULL;
+static Client* its_me = nullptr;
+static Client* add = nullptr;
 
 void AddCli()
 {
-	add = new Client("add");
+	if (!add)
+		add = new Client("add");
+}
+
+void EnterMessenger(char* login, char* password, char* server)
+{
+	if (!its_me)
+		its_me = new Client(login);
 }
 
 void SendMessage(char* to, char* text)
@@ -25,7 +32,7 @@ void RecvMessage(char* text)
 void GetOnlineUsersString(char* usersString, int* usersStringSize)
 {
 	if (!its_me)
-		its_me = new Client("me");
+		return;
 
 	static messenger::UserList list;
 	if (!usersString)
