@@ -11,8 +11,10 @@ namespace MessengerUI.Controls
 {
     public class RecvMessageControl : BindableBase
     {
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate void OnMessageReceived(string message);
         [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void RecvMessage(StringBuilder text);
+        static extern void RecvMessage(OnMessageReceived callbackPointer);
 
         private string _text;
         public string Text
@@ -21,11 +23,13 @@ namespace MessengerUI.Controls
             set { SetProperty(ref _text, value); }
         }
 
-        public void Receive()
+        public void StartReceiving()
         {
-            var text = new StringBuilder(50);
-            RecvMessage(text);
-            Text += text + "\n";
+            OnMessageReceived recvCallback = message => { Text += message + "\n"; };
+            Task mytask = Task.Run(() =>
+            {
+                RecvMessage(recvCallback);
+            });
         }
     }
 }

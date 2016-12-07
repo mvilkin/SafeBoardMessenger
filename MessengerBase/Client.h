@@ -21,7 +21,9 @@ public:
 private:
 	std::shared_ptr<messenger::IMessenger> m_messenger;
 	std::mutex m_mutex;
+	std::mutex m_mutex_msg;
 	std::condition_variable m_cv;
+	std::condition_variable m_cv_msg;
 	bool m_ready;
 	std::string m_receivedMsg;
 	messenger::UserList m_userList;

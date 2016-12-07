@@ -36,15 +36,15 @@ namespace MessengerUI.ViewModels
             set
             {
                 if (_sendMessageCtrl != null)
-                    _sendMessageCtrl.PropertyChanged -= foo;
+                    _sendMessageCtrl.PropertyChanged -= OnSendMessagePropertyChanged;
 
                 SetProperty(ref _sendMessageCtrl, value);
 
                 if (_sendMessageCtrl != null)
-                    _sendMessageCtrl.PropertyChanged += foo;
+                    _sendMessageCtrl.PropertyChanged += OnSendMessagePropertyChanged;
             }
         }
-        private void foo(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+        private void OnSendMessagePropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
             var sendMessageDelegateCommand = SendMessageCommand as DelegateCommand;
             if (sendMessageDelegateCommand != null)
@@ -96,10 +96,6 @@ namespace MessengerUI.ViewModels
         {
             SendMessageCtrl.Recipient = OnlineUsersCtrl.OnlineUsers[SelectedUser];
             SendMessageCtrl.Send();
-
-            System.Threading.Thread.Sleep(1000);
-
-            RecvMessageCtrl.Receive();
         }
 
         private void EnterChatEventHandler(EnterChatEventData eventData)
@@ -108,6 +104,9 @@ namespace MessengerUI.ViewModels
             LoginCtrl.Password = eventData.Password;
             LoginCtrl.Server = eventData.Server;
             LoginCtrl.EnterChat();
+
+            OnlineUsersCtrl.Update();
+            RecvMessageCtrl.StartReceiving();
         }
     }
 }

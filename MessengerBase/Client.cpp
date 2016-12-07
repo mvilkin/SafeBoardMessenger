@@ -38,7 +38,7 @@ std::string Client::ReceiveMessage()
 	std::unique_lock<std::mutex> lock(m_mutex);
 	while (m_receivedMsg.empty())
 	{
-		m_cv.wait(lock);
+		m_cv_msg.wait(lock);
 	}
 
 	std::string res = m_receivedMsg;
@@ -83,5 +83,5 @@ void Client::OnMessageReceived(const messenger::UserId& senderId, const messenge
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	m_receivedMsg.assign(reinterpret_cast<const char*>(&msg.content.data[0]), msg.content.data.size());
-	m_cv.notify_all();
+	m_cv_msg.notify_all();
 }

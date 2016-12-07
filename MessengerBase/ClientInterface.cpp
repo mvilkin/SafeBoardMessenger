@@ -2,13 +2,6 @@
 #include "Client.h"
 
 static Client* its_me = nullptr;
-static Client* add = nullptr;
-
-void AddCli()
-{
-	if (!add)
-		add = new Client("add");
-}
 
 void EnterMessenger(char* login, char* password, char* server)
 {
@@ -21,12 +14,13 @@ void SendMessage(char* to, char* text)
 	its_me->SendMessage(to, text);
 }
 
-void RecvMessage(char* text)
+void RecvMessage(OnMessageReceivedCallback callback)
 {
-	auto txt = add->ReceiveMessage();
-	int size = txt.length();
-	memset(text, 0, size + 1);
-	memcpy(text, txt.c_str(), size);
+	while (true)
+	{
+		auto text = its_me->ReceiveMessage();
+		callback(text.c_str());
+	}
 }
 
 void GetOnlineUsersString(char* usersString, int* usersStringSize)
