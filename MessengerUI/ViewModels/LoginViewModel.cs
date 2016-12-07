@@ -22,6 +22,13 @@ namespace MessengerUI.ViewModels
             set { SetProperty(ref _login, value); }
         }
 
+        private string _password = "MyPassword";
+        public string Password
+        {
+            get { return _password; }
+            set { SetProperty(ref _password, value); }
+        }
+
         private string _server = "MyServer";
         public string Server
         {
@@ -47,6 +54,7 @@ namespace MessengerUI.ViewModels
             var eventData = new EnterChatEventData
             {
                 Login = Login,
+                Password = Password,
                 Server = Server
             };
             _eventAggregator.GetEvent<EnterChatEvent>().Publish(eventData);

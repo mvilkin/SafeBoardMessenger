@@ -14,6 +14,7 @@ namespace MessengerUI.Events
     public class EnterChatEventData
     {
         public string Login { get; set; }
+        public string Password { get; set; }
         public string Server { get; set; }
     }
 }
