@@ -14,11 +14,11 @@ namespace MessengerUI.ViewModels
 {
     public class ChatViewModel : BindableBase
     {
-        private string _textMessage;
-        public string TextMessage
+        private LoginControl _loginControl;
+        public LoginControl LoginCtrl
         {
-            get { return _textMessage; }
-            set { SetProperty(ref _textMessage, value); }
+            get { return _loginControl; }
+            set { SetProperty(ref _loginControl, value); }
         }
 
         private OnlineUsersControl _onlineUsersCtrl;
@@ -57,8 +57,9 @@ namespace MessengerUI.ViewModels
             OnlineUsersCtrl = new OnlineUsersControl();
             SendMessageCtrl = new SendMessageControl();
             RecvMessageCtrl = new RecvMessageControl();
+            LoginCtrl = new LoginControl();
 
-            SendMessageCommand = new DelegateCommand(PerformSend, CanSend).ObservesProperty(() => TextMessage);
+            SendMessageCommand = new DelegateCommand(PerformSend, CanSend);
             UpdateUsersCommand = new DelegateCommand(PerformUpdateUsers);
 
             eventAggregator.GetEvent<EnterChatEvent>().Subscribe(EnterChatEventHandler);
@@ -66,7 +67,7 @@ namespace MessengerUI.ViewModels
 
         private bool CanSend()
         {
-            return !String.IsNullOrWhiteSpace(TextMessage);
+            return !String.IsNullOrWhiteSpace(SendMessageCtrl.Text);
         }
 
         private void PerformUpdateUsers()
@@ -83,7 +84,10 @@ namespace MessengerUI.ViewModels
 
         private void EnterChatEventHandler(EnterChatEventData eventData)
         {
-            TextMessage = "Login: " + eventData.Login + "\nServer: " + eventData.Server;
+            LoginCtrl.Login = eventData.Login;
+            LoginCtrl.Password = eventData.Password;
+            LoginCtrl.Server = eventData.Server;
+            LoginCtrl.EnterChat();
         }
     }
 }
