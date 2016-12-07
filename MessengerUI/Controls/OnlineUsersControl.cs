@@ -24,7 +24,6 @@ namespace MessengerUI.Controls
 
         public void Update()
         {
-            AddCli();
             int onlineUsersStringSize = 0;
             GetOnlineUsersString(null, ref onlineUsersStringSize);
             var onlineUsers = new StringBuilder(onlineUsersStringSize);

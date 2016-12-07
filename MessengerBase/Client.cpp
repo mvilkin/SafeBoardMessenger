@@ -21,6 +21,7 @@ Client::Client(const std::string& id) :
 
 Client::~Client()
 {
+	m_messenger->UnregisterObserver(this);
 	m_messenger->Disconnect();
 }
 

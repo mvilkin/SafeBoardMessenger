@@ -12,6 +12,8 @@ namespace MessengerUI.Controls
     {
         [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SendMessage(StringBuilder to, StringBuilder text);
+        [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void AddCli();
 
         private string _text;
         public string Text
@@ -22,6 +24,7 @@ namespace MessengerUI.Controls
 
         public void Send()
         {
+            AddCli();
             var msgTo = new StringBuilder("add");
             var msgText = new StringBuilder(Text);
             SendMessage(msgTo, msgText);
