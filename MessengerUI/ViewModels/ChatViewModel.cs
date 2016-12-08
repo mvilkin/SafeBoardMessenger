@@ -94,6 +94,11 @@ namespace MessengerUI.ViewModels
 
         private void PerformUserChosen()
         {
+            if (SelectedUser >= 0)
+            {
+                RecvMessageCtrl.Sender = OnlineUsersCtrl.OnlineUsers[SelectedUser];
+                RecvMessageCtrl.StartReceiving();
+            }
         }
 
         private void EnterChatEventHandler(int enterCode)

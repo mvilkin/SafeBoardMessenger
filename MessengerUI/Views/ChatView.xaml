@@ -4,12 +4,19 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:prism="http://prismlibrary.com/"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              prism:ViewModelLocator.AutoWireViewModel="True"
              mc:Ignorable="d" 
              d:DesignHeight="387" d:DesignWidth="528">
     <Grid>
         <Grid Margin="31,0,29,23" Background="White" Height="264" VerticalAlignment="Bottom">
-            <ListBox Height="200" Width="80" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,50,0,0" Name="ListBoxUsers" ItemsSource="{Binding OnlineUsersCtrl.OnlineUsers}" SelectedIndex="{Binding SelectedUser}" ScrollViewer.VerticalScrollBarVisibility="Auto" />
+            <ListBox Height="200" Width="80" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10,50,0,0" Name="ListBoxUsers" ItemsSource="{Binding OnlineUsersCtrl.OnlineUsers}" SelectedIndex="{Binding SelectedUser}" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <prism:InvokeCommandAction Command="{Binding UserChosenCommand}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ListBox>
             <Button Height="30" Width="80" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,15,0,0" Content="Update" FontSize="15" Name="ButtonUpdateUsers" Command="{Binding UpdateUsersCommand}" />
             <TextBox Height="150" Width="350" HorizontalAlignment="Left" Margin="100,10,0,0" Name="TextBoxChat" Text="{Binding RecvMessageCtrl.Text, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" />
             <TextBlock Height="23" Width="110" HorizontalAlignment="Left" Margin="120,167,0,0" Name="TextBlockMessage" Text="Message:" FontSize="17" VerticalAlignment="Top" />

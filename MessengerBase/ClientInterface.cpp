@@ -13,16 +13,19 @@ void ExitMessenger()
 	return its_me.ExitMessenger();
 }
 
-void SendMessage(char* to, char* text)
+void SendMessage(char* to, char* msg, OnMessageSentCallback callback)
 {
-	its_me.SendMessage(to, text);
+	its_me.SendMessage(to, msg);
+	auto text = its_me.MessagesToText(to);
+	callback(text.c_str());
 }
 
-void ReceivinvMessagesProcess(OnMessageReceivedCallback callback)
+void ReceiveNewMessages(char* from, OnMessageReceivedCallback callback)
 {
 	while (true)
 	{
-		auto text = its_me.ReceiveMessage();
+		its_me.ReadNewMessages(from);
+		auto text = its_me.MessagesToText(from);
 		callback(text.c_str());
 	}
 }

@@ -3,6 +3,13 @@
 
 #include "messenger.h"
 #include <future>
+#include <unordered_map>
+
+struct MyMessageInfo
+{
+	messenger::Message message;
+	messenger::message_status::Type status;
+};
 
 class Client : public messenger::ILoginCallback, messenger::IMessagesObserver, messenger::IRequestUsersCallback
 {
@@ -15,6 +22,8 @@ public:
 	void SendMessage(std::string user, std::string msg);
 	std::string ReceiveMessage();
 	messenger::UserList GetActiveUsers(bool update);
+	void ReadNewMessages(std::string fromUserId);
+	std::string MessagesToText(std::string fromUserId);
 
 	void OnOperationResult(messenger::operation_result::Type result) override;
 	void OnOperationResult(messenger::operation_result::Type result, const messenger::UserList& users) override;
@@ -32,6 +41,8 @@ private:
 	messenger::operation_result::Type m_enter_res;
 	std::string m_receivedMsg;
 	messenger::UserList m_userList;
+	std::unordered_map<messenger::UserId, std::vector<MyMessageInfo> > m_map_chat;
+	std::unordered_map<messenger::UserId, std::vector<MyMessageInfo> > m_map_new_msg;
 };
 
 #endif // _MESSENGERBASE_CLIENT_H_

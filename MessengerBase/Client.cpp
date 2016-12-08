@@ -43,7 +43,18 @@ void Client::SendMessage(std::string user, std::string msg)
 	messenger::MessageContent message;
 	message.type = messenger::message_content_type::Text;
 	std::copy(msg.begin(), msg.end(), std::back_inserter(message.data));
-	m_messenger->SendMessage(user, message);
+
+	messenger::Message msg_info = m_messenger->SendMessage(user, message);
+
+
+	MyMessageInfo info;
+	info.message.identifier = msg_info.identifier;
+	info.message.time = msg_info.time;
+	info.message.content.type = msg_info.content.type;
+	info.message.content.encrypted = msg_info.content.encrypted;
+	info.message.content.data = msg_info.content.data;
+	info.status = messenger::message_status::Sending;
+	m_map_chat[user].push_back(info);
 }
 
 std::string Client::ReceiveMessage()
@@ -71,6 +82,37 @@ messenger::UserList Client::GetActiveUsers(bool update)
 	return m_userList;
 }
 
+void Client::ReadNewMessages(std::string fromUserId)
+{
+	// TODO: check for race conditions
+
+	for (auto& msg : m_map_new_msg[fromUserId])
+	{
+		m_messenger->SendMessageSeen(fromUserId, msg.message.identifier);
+		msg.status = messenger::message_status::Seen;
+	}
+
+	m_map_chat[fromUserId].insert(m_map_chat[fromUserId].end(), 
+		std::make_move_iterator(m_map_new_msg[fromUserId].begin()), 
+		std::make_move_iterator(m_map_new_msg[fromUserId].end()));
+
+	m_map_new_msg[fromUserId].clear();
+}
+
+std::string Client::MessagesToText(std::string fromUserId)
+{
+	std::string result;
+
+	for (auto& msg : m_map_chat[fromUserId])
+	{
+		std::string text;
+		text.assign(reinterpret_cast<const char*>(&msg.message.content.data[0]), msg.message.content.data.size());
+		result += text + "\n";
+	}
+
+	return result;
+}
+
 void Client::OnOperationResult(messenger::operation_result::Type result)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
@@ -96,6 +138,15 @@ void Client::OnMessageStatusChanged(const messenger::MessageId& msgId, messenger
 void Client::OnMessageReceived(const messenger::UserId& senderId, const messenger::Message& msg)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
-	m_receivedMsg.assign(reinterpret_cast<const char*>(&msg.content.data[0]), msg.content.data.size());
+
+	MyMessageInfo info;
+	info.message.identifier = msg.identifier;
+	info.message.time = msg.time;
+	info.message.content.type = msg.content.type;
+	info.message.content.encrypted = msg.content.encrypted;
+	info.message.content.data = msg.content.data;
+	info.status = messenger::message_status::Delivered;
+	m_map_new_msg[senderId].push_back(info);
+
 	m_cv_msg.notify_all();
 }

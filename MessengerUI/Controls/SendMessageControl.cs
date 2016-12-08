@@ -10,8 +10,10 @@ namespace MessengerUI.Controls
 {
     public class SendMessageControl : BindableBase
     {
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate void OnMessageSent(string message);
         [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SendMessage(StringBuilder to, StringBuilder text);
+        static extern void SendMessage(StringBuilder to, StringBuilder text, OnMessageSent callbackPointer);
 
         private string _text;
         public string Text
@@ -29,7 +31,9 @@ namespace MessengerUI.Controls
 
         public void Send()
         {
-            SendMessage(new StringBuilder(Recipient), new StringBuilder(Text));
+            OnMessageSent recvCallback = message => { Text = message; };
+            Task.Run(() => { SendMessage(new StringBuilder(Recipient), new StringBuilder(Text), recvCallback); });
+            Text = string.Empty;
         }
     }
 }

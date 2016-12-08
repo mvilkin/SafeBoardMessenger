@@ -14,7 +14,7 @@ namespace MessengerUI.Controls
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate void OnMessageReceived(string message);
         [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void ReceivinvMessagesProcess(OnMessageReceived callbackPointer);
+        static extern void ReceiveNewMessages(StringBuilder from, OnMessageReceived callbackPointer);
 
         private string _text;
         public string Text
@@ -23,13 +23,24 @@ namespace MessengerUI.Controls
             set { SetProperty(ref _text, value); }
         }
 
+        private string _sender;
+        public string Sender
+        {
+            get { return _sender; }
+            set { SetProperty(ref _sender, value); }
+        }
+
+        private Task ReceivingTask;
+
         public void StartReceiving()
         {
-            OnMessageReceived recvCallback = message => { Text += message + "\n"; };
-            Task mytask = Task.Run(() =>
-            {
-                ReceivinvMessagesProcess(recvCallback);
-            });
+            OnMessageReceived recvCallback = message => { Text = message; };
+            ReceivingTask = Task.Run(() => { ReceiveNewMessages(new StringBuilder(Sender), recvCallback); });
+        }
+
+        public void StopReceiving()
+        {
+            ReceivingTask.KILL!!!;
         }
     }
 }
