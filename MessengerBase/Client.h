@@ -7,8 +7,10 @@
 class Client : public messenger::ILoginCallback, messenger::IMessagesObserver, messenger::IRequestUsersCallback
 {
 public:
-	Client(const std::string& id);
+	Client();
 	~Client();
+
+	int EnterMessenger(const std::string& login, const std::string& password, const std::string& server);
 	void SendMessage(std::string user, std::string msg);
 	std::string ReceiveMessage();
 	messenger::UserList GetActiveUsers(bool update);
@@ -25,6 +27,7 @@ private:
 	std::condition_variable m_cv;
 	std::condition_variable m_cv_msg;
 	bool m_ready;
+	messenger::operation_result::Type m_enter_res;
 	std::string m_receivedMsg;
 	messenger::UserList m_userList;
 };

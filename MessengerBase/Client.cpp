@@ -1,14 +1,25 @@
 #include "Client.h"
 
-Client::Client(const std::string& id) :
-	m_ready(false)
+Client::Client() :
+	m_ready(false),
+	m_enter_res(messenger::operation_result::Ok)
+{
+}
+
+Client::~Client()
+{
+	m_messenger->UnregisterObserver(this);
+	m_messenger->Disconnect();
+}
+
+int Client::EnterMessenger(const std::string& login, const std::string& password, const std::string& server)
 {
 	messenger::MessengerSettings settings;
 	settings.serverUrl = "127.0.0.1";
 	m_messenger = messenger::GetMessengerInstance(settings);
 
 	messenger::SecurityPolicy securityPolicy;
-	m_messenger->Login((id + "@localhost").c_str(), "", securityPolicy, this);
+	m_messenger->Login((login + "@localhost").c_str(), "", securityPolicy, this);
 
 	std::unique_lock<std::mutex> lock(m_mutex);
 	while (!m_ready)
@@ -17,12 +28,8 @@ Client::Client(const std::string& id) :
 	}
 
 	m_messenger->RegisterObserver(this);
-}
 
-Client::~Client()
-{
-	m_messenger->UnregisterObserver(this);
-	m_messenger->Disconnect();
+	return m_enter_res;
 }
 
 void Client::SendMessage(std::string user, std::string msg)
@@ -61,6 +68,7 @@ messenger::UserList Client::GetActiveUsers(bool update)
 void Client::OnOperationResult(messenger::operation_result::Type result)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
+	m_enter_res = result;
 	m_ready = true;
 	m_cv.notify_all();
 }

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using MessengerUI.Controls;
 using MessengerUI.Events;
 using Prism.Commands;
 using Prism.Events;
@@ -15,49 +17,48 @@ namespace MessengerUI.ViewModels
     {
         private readonly IEventAggregator _eventAggregator;
 
-        private string _login = "MyName";
-        public string Login
+        private LoginControl _loginControl;
+        public LoginControl LoginCtrl
         {
-            get { return _login; }
-            set { SetProperty(ref _login, value); }
-        }
+            get { return _loginControl; }
+            set
+            {
+                if (_loginControl != null)
+                    _loginControl.PropertyChanged -= OnLoginControlPropertyChanged;
 
-        private string _password = "MyPassword";
-        public string Password
-        {
-            get { return _password; }
-            set { SetProperty(ref _password, value); }
-        }
+                SetProperty(ref _loginControl, value);
 
-        private string _server = "MyServer";
-        public string Server
+                if (_loginControl != null)
+                    _loginControl.PropertyChanged += OnLoginControlPropertyChanged;
+            }
+        }
+        private void OnLoginControlPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
         {
-            get { return _server; }
-            set { SetProperty(ref _server, value); }
+            var sendMessageDelegateCommand = EnterChatCommand as DelegateCommand;
+            if (sendMessageDelegateCommand != null)
+                sendMessageDelegateCommand.RaiseCanExecuteChanged();
         }
 
         public ICommand EnterChatCommand { get; set; }
 
         public LoginViewModel(IEventAggregator eventAggregator)
         {
+            LoginCtrl = new LoginControl();
             _eventAggregator = eventAggregator;
-            EnterChatCommand = new DelegateCommand(PerformEnter, CanEnter).ObservesProperty(() => Login).ObservesProperty(() => Server);
+            EnterChatCommand = new DelegateCommand(PerformEnter, CanEnter);
         }
 
         private bool CanEnter()
         {
-            return !String.IsNullOrWhiteSpace(Login) && !String.IsNullOrWhiteSpace(Server);
+            return !String.IsNullOrWhiteSpace(LoginCtrl.Login) &&
+                !String.IsNullOrWhiteSpace(LoginCtrl.Password) &&
+                !String.IsNullOrWhiteSpace(LoginCtrl.Server);
         }
 
         private void PerformEnter()
         {
-            var eventData = new EnterChatEventData
-            {
-                Login = Login,
-                Password = Password,
-                Server = Server
-            };
-            _eventAggregator.GetEvent<EnterChatEvent>().Publish(eventData);
+            var enterCode = LoginCtrl.EnterChat();
+            _eventAggregator.GetEvent<EnterChatEvent>().Publish(enterCode);
         }
     }
 }
