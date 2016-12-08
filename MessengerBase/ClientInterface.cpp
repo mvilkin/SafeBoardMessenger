@@ -24,9 +24,9 @@ void ReceiveNewMessages(char* from, OnMessageReceivedCallback callback)
 {
 	while (true)
 	{
-		its_me.ReadNewMessages(from);
 		auto text = its_me.MessagesToText(from);
 		callback(text.c_str());
+		its_me.ReadNewMessages(from);
 	}
 }
 

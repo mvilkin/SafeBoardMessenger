@@ -22,6 +22,13 @@ namespace MessengerUI.ViewModels
             set { SetProperty(ref _onlineUsersCtrl, value); }
         }
 
+        private ChatViewControl _chatViewCtrl;
+        public ChatViewControl ChatViewCtrl
+        {
+            get { return _chatViewCtrl; }
+            set { SetProperty(ref _chatViewCtrl, value); }
+        }
+
         private SendMessageControl _sendMessageCtrl;
         public SendMessageControl SendMessageCtrl
         {
@@ -67,6 +74,10 @@ namespace MessengerUI.ViewModels
             OnlineUsersCtrl = new OnlineUsersControl();
             SendMessageCtrl = new SendMessageControl();
             RecvMessageCtrl = new RecvMessageControl();
+            ChatViewCtrl = new ChatViewControl();
+
+            SendMessageCtrl.ChatViewCtrl = ChatViewCtrl;
+            RecvMessageCtrl.ChatViewCtrl = ChatViewCtrl;
 
             SendMessageCommand = new DelegateCommand(PerformSend, CanSend).ObservesProperty(() => SelectedUser);
             UpdateUsersCommand = new DelegateCommand(PerformUpdateUsers);
@@ -88,7 +99,6 @@ namespace MessengerUI.ViewModels
 
         private void PerformSend()
         {
-            SendMessageCtrl.Recipient = OnlineUsersCtrl.OnlineUsers[SelectedUser];
             SendMessageCtrl.Send();
         }
 
@@ -96,7 +106,10 @@ namespace MessengerUI.ViewModels
         {
             if (SelectedUser >= 0)
             {
+                RecvMessageCtrl.StopReceiving();
                 RecvMessageCtrl.Sender = OnlineUsersCtrl.OnlineUsers[SelectedUser];
+                SendMessageCtrl.Recipient = OnlineUsersCtrl.OnlineUsers[SelectedUser];
+                ChatViewCtrl.Text = string.Empty;
                 RecvMessageCtrl.StartReceiving();
             }
         }

@@ -84,7 +84,11 @@ messenger::UserList Client::GetActiveUsers(bool update)
 
 void Client::ReadNewMessages(std::string fromUserId)
 {
-	// TODO: check for race conditions
+	std::unique_lock<std::mutex> lock(m_mutex);
+	while (m_map_new_msg[fromUserId].empty())
+	{
+		m_cv_msg.wait(lock);
+	}
 
 	for (auto& msg : m_map_new_msg[fromUserId])
 	{

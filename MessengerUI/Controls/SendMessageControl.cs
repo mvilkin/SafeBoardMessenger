@@ -15,6 +15,13 @@ namespace MessengerUI.Controls
         [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void SendMessage(StringBuilder to, StringBuilder text, OnMessageSent callbackPointer);
 
+        private ChatViewControl _chatViewCtrl;
+        public ChatViewControl ChatViewCtrl
+        {
+            get { return _chatViewCtrl; }
+            set { SetProperty(ref _chatViewCtrl, value); }
+        }
+
         private string _text;
         public string Text
         {
@@ -31,8 +38,8 @@ namespace MessengerUI.Controls
 
         public void Send()
         {
-            OnMessageSent recvCallback = message => { Text = message; };
-            Task.Run(() => { SendMessage(new StringBuilder(Recipient), new StringBuilder(Text), recvCallback); });
+            OnMessageSent recvCallback = message => { ChatViewCtrl.Text = message; };
+            SendMessage(new StringBuilder(Recipient), new StringBuilder(Text), recvCallback);
             Text = string.Empty;
         }
     }
