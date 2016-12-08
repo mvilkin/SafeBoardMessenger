@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using MessengerUI.Events;
 using Prism.Commands;
@@ -56,10 +57,17 @@ namespace MessengerUI.ViewModels
             BackButtonVisibility = false;
         }
 
-        private void EnterChatEventHandler(EnterChatEventData eventData)
+        private void EnterChatEventHandler(int enterCode)
         {
-            BackButtonVisibility = true;
-            Navigate("ChatView");
+            if (enterCode == 0)
+            {
+                BackButtonVisibility = true;
+                Navigate("ChatView");
+            }
+            else
+            {
+                MessageBox.Show("Sorry, error #" + enterCode + " occured!");
+            }
         }
 
         private void PerformEnterMessenger()

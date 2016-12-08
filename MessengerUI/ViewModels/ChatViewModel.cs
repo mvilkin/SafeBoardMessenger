@@ -15,13 +15,6 @@ namespace MessengerUI.ViewModels
 {
     public class ChatViewModel : BindableBase
     {
-        private LoginControl _loginControl;
-        public LoginControl LoginCtrl
-        {
-            get { return _loginControl; }
-            set { SetProperty(ref _loginControl, value); }
-        }
-
         private OnlineUsersControl _onlineUsersCtrl;
         public OnlineUsersControl OnlineUsersCtrl
         {
@@ -73,7 +66,6 @@ namespace MessengerUI.ViewModels
             OnlineUsersCtrl = new OnlineUsersControl();
             SendMessageCtrl = new SendMessageControl();
             RecvMessageCtrl = new RecvMessageControl();
-            LoginCtrl = new LoginControl();
 
             SendMessageCommand = new DelegateCommand(PerformSend, CanSend).ObservesProperty(() => SelectedUser);
             UpdateUsersCommand = new DelegateCommand(PerformUpdateUsers);
@@ -98,15 +90,13 @@ namespace MessengerUI.ViewModels
             SendMessageCtrl.Send();
         }
 
-        private void EnterChatEventHandler(EnterChatEventData eventData)
+        private void EnterChatEventHandler(int enterCode)
         {
-            LoginCtrl.Login = eventData.Login;
-            LoginCtrl.Password = eventData.Password;
-            LoginCtrl.Server = eventData.Server;
-            LoginCtrl.EnterChat();
-
-            OnlineUsersCtrl.Update();
-            RecvMessageCtrl.StartReceiving();
+            if (enterCode == 0)
+            {
+                OnlineUsersCtrl.Update();
+                RecvMessageCtrl.StartReceiving();
+            }
         }
     }
 }

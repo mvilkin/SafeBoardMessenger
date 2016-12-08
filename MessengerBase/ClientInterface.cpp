@@ -1,36 +1,32 @@
 #include "ClientInterface.h"
 #include "Client.h"
 
-static Client* its_me = nullptr;
+static Client its_me;
 
-void EnterMessenger(char* login, char* password, char* server)
+int EnterMessenger(char* login, char* password, char* server)
 {
-	if (!its_me)
-		its_me = new Client(login);
+	return its_me.EnterMessenger(login, password, server);
 }
 
 void SendMessage(char* to, char* text)
 {
-	its_me->SendMessage(to, text);
+	its_me.SendMessage(to, text);
 }
 
 void RecvMessage(OnMessageReceivedCallback callback)
 {
 	while (true)
 	{
-		auto text = its_me->ReceiveMessage();
+		auto text = its_me.ReceiveMessage();
 		callback(text.c_str());
 	}
 }
 
 void GetOnlineUsersString(char* usersString, int* usersStringSize)
 {
-	if (!its_me)
-		return;
-
 	static messenger::UserList list;
 	if (!usersString)
-		list = its_me->GetActiveUsers(true);
+		list = its_me.GetActiveUsers(true);
 
 	std::string listString;
 	for (auto& user : list)

@@ -11,13 +11,13 @@
         <Grid Margin="31,0,29,23" Background="White" Height="264" VerticalAlignment="Bottom">
             <TextBlock Height="40" Width="110" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,10,0,0" Name="TextBlockHeading" Text="Login:" TextAlignment="Center" FontSize="23" FontStretch="ExtraCondensed"/>
             <TextBlock Height="23" HorizontalAlignment="Left" Margin="67,70,0,0" Name="TextBlockName" Text="Name:" VerticalAlignment="Top" Width="110" />
-            <TextBox Height="23" HorizontalAlignment="Left" Margin="183,70,0,0" Name="TextBoxName" Text="{Binding Login, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="222" />
+            <TextBox Height="23" HorizontalAlignment="Left" Margin="183,70,0,0" Name="TextBoxName" Text="{Binding LoginCtrl.Login, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="222" />
 
             <TextBlock Height="23" HorizontalAlignment="Left" Margin="67,110,0,0" Name="TextBlockPassword" Text="Password:" VerticalAlignment="Top" Width="110" />
-            <TextBox Height="23" HorizontalAlignment="Left" Margin="183,110,0,0" Name="TextBoxPassword" Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="222" />
+            <TextBox Height="23" HorizontalAlignment="Left" Margin="183,110,0,0" Name="TextBoxPassword" Text="{Binding LoginCtrl.Password, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="222" />
 
             <TextBlock Height="23" HorizontalAlignment="Left" Margin="67,150,0,0" Name="TextBlockServer" Text="Server:" VerticalAlignment="Top" Width="110"  />
-            <TextBox Height="23" HorizontalAlignment="Left" Margin="183,150,0,0" Name="TextBoxServer" Text="{Binding Server, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="222" />
+            <TextBox Height="23" HorizontalAlignment="Left" Margin="183,150,0,0" Name="TextBoxServer" Text="{Binding LoginCtrl.Server, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Width="222" />
 
             <Button Content="Enter" Height="23" HorizontalAlignment="Right" Margin="0,200,100,0" Name="ButtonEnterChat" VerticalAlignment="Top" Width="70" Command="{Binding EnterChatCommand}" />
         </Grid>
