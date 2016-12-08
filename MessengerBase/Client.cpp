@@ -8,6 +8,8 @@ Client::Client() :
 
 Client::~Client()
 {
+	if (m_messenger)
+		ExitMessenger();
 }
 
 int Client::EnterMessenger(const std::string& login, const std::string& password, const std::string& server)
