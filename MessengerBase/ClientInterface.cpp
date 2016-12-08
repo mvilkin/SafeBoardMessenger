@@ -18,7 +18,7 @@ void SendMessage(char* to, char* text)
 	its_me.SendMessage(to, text);
 }
 
-void RecvMessage(OnMessageReceivedCallback callback)
+void ReceivinvMessagesProcess(OnMessageReceivedCallback callback)
 {
 	while (true)
 	{

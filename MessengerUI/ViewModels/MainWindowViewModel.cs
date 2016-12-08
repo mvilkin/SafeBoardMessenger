@@ -62,6 +62,11 @@ namespace MessengerUI.ViewModels
             BackButtonVisibility = false;
         }
 
+        private static string TranslateEnterCode(int code)
+        {
+            return "Sorry, error #" + code + " occured!";
+        }
+
         private void EnterChatEventHandler(int enterCode)
         {
             if (enterCode == 0)
@@ -71,7 +76,7 @@ namespace MessengerUI.ViewModels
             }
             else
             {
-                MessageBox.Show("Sorry, error #" + enterCode + " occured!");
+                MessageBox.Show(TranslateEnterCode(enterCode));
             }
         }
 

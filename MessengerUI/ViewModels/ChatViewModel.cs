@@ -60,6 +60,7 @@ namespace MessengerUI.ViewModels
 
         public ICommand SendMessageCommand { get; set; }
         public ICommand UpdateUsersCommand { get; set; }
+        public ICommand UserChosenCommand { get; set; }
 
         public ChatViewModel(IEventAggregator eventAggregator)
         {
@@ -69,6 +70,7 @@ namespace MessengerUI.ViewModels
 
             SendMessageCommand = new DelegateCommand(PerformSend, CanSend).ObservesProperty(() => SelectedUser);
             UpdateUsersCommand = new DelegateCommand(PerformUpdateUsers);
+            UserChosenCommand = new DelegateCommand(PerformUserChosen).ObservesProperty(() => SelectedUser);
 
             eventAggregator.GetEvent<EnterChatEvent>().Subscribe(EnterChatEventHandler);
         }
@@ -90,11 +92,16 @@ namespace MessengerUI.ViewModels
             SendMessageCtrl.Send();
         }
 
+        private void PerformUserChosen()
+        {
+        }
+
         private void EnterChatEventHandler(int enterCode)
         {
             if (enterCode == 0)
             {
                 OnlineUsersCtrl.Update();
+                SelectedUser = -1;
                 RecvMessageCtrl.StartReceiving();
             }
         }

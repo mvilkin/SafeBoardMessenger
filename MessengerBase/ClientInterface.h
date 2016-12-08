@@ -13,11 +13,11 @@ extern "C"
 {
 	typedef char* (__stdcall * OnMessageReceivedCallback)(const char*);
 
-	MSGBASE_API void RecvMessage(OnMessageReceivedCallback callback);
 	MSGBASE_API int EnterMessenger(char* login, char* password, char* server);
 	MSGBASE_API void ExitMessenger();
-	MSGBASE_API void GetOnlineUsersString(char* usersString, int* usersStringSize);
 	MSGBASE_API void SendMessage(char* to, char* text);
+	MSGBASE_API void ReceivinvMessagesProcess(OnMessageReceivedCallback callback);
+	MSGBASE_API void GetOnlineUsersString(char* usersString, int* usersStringSize);
 }
 
 #endif // _MESSENGERBASE_CLIENT_INTERFACE_H_

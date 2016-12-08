@@ -14,7 +14,7 @@ namespace MessengerUI.Controls
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate void OnMessageReceived(string message);
         [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void RecvMessage(OnMessageReceived callbackPointer);
+        static extern void ReceivinvMessagesProcess(OnMessageReceived callbackPointer);
 
         private string _text;
         public string Text
@@ -28,7 +28,7 @@ namespace MessengerUI.Controls
             OnMessageReceived recvCallback = message => { Text += message + "\n"; };
             Task mytask = Task.Run(() =>
             {
-                RecvMessage(recvCallback);
+                ReceivinvMessagesProcess(recvCallback);
             });
         }
     }
