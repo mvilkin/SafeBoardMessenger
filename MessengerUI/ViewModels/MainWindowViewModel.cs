@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,6 +16,9 @@ namespace MessengerUI.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
+        [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ExitMessenger();
+
         private bool _backButtonVisibility = false;
         public bool BackButtonVisibility
         {
@@ -53,6 +57,7 @@ namespace MessengerUI.ViewModels
 
         private void BackButtonClickHandler()
         {
+            ExitMessenger();
             Navigate("LoginView");
             BackButtonVisibility = false;
         }

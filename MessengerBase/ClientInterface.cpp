@@ -8,6 +8,11 @@ int EnterMessenger(char* login, char* password, char* server)
 	return its_me.EnterMessenger(login, password, server);
 }
 
+void ExitMessenger()
+{
+	return its_me.ExitMessenger();
+}
+
 void SendMessage(char* to, char* text)
 {
 	its_me.SendMessage(to, text);

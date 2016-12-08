@@ -11,6 +11,7 @@ public:
 	~Client();
 
 	int EnterMessenger(const std::string& login, const std::string& password, const std::string& server);
+	void ExitMessenger();
 	void SendMessage(std::string user, std::string msg);
 	std::string ReceiveMessage();
 	messenger::UserList GetActiveUsers(bool update);
@@ -26,6 +27,7 @@ private:
 	std::mutex m_mutex_msg;
 	std::condition_variable m_cv;
 	std::condition_variable m_cv_msg;
+	std::condition_variable m_cv_usr;
 	bool m_ready;
 	messenger::operation_result::Type m_enter_res;
 	std::string m_receivedMsg;
