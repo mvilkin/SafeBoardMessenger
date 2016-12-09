@@ -20,6 +20,7 @@ void ExitMessenger()
 
 	current_client->ExitMessenger();
 	delete current_client;
+	current_client = nullptr;
 }
 
 void SendNewMessage(char* user, char* message, OnMessageSentCallback callback)
@@ -63,6 +64,8 @@ void StartGetOnlineUsers(OnUserUpdate callback)
 	current_client->StartUpdatingProcess();
 	while (true)
 	{
+		if (!current_client)
+			break;
 		messenger::UserList list = current_client->GetActiveUsers();
 		if (list.empty())
 			break;
