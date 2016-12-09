@@ -59,27 +59,17 @@ void Client::SendMessage(std::string user, std::string msg)
 	m_map_chat[user].push_back(info);
 }
 
-std::string Client::ReceiveMessage()
-{
-	std::unique_lock<std::mutex> lock(m_mutex);
-	while (m_receivedMsg.empty())
-	{
-		m_cv_msg.wait(lock);
-	}
-
-	std::string res = m_receivedMsg;
-	m_receivedMsg.clear();
-	return res;
-}
-
 messenger::UserList Client::GetActiveUsers(bool update)
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
-	m_userList.clear();
-	m_messenger->RequestActiveUsers(this);
-	while (m_userList.empty())
+	if (update)
 	{
-		m_cv_usr.wait(lock);
+		std::unique_lock<std::mutex> lock(m_mutex);
+		m_userList.clear();
+		m_messenger->RequestActiveUsers(this);
+		while (m_userList.empty())
+		{
+			m_cv_usr.wait(lock);
+		}
 	}
 	return m_userList;
 }
@@ -137,7 +127,6 @@ void Client::OnOperationResult(messenger::operation_result::Type result, const m
 void Client::OnMessageStatusChanged(const messenger::MessageId& msgId, messenger::message_status::Type status)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
-	m_receivedMsg = "<error>";
 	m_cv.notify_all();
 }
 

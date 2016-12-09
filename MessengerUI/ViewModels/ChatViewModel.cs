@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -15,6 +16,9 @@ namespace MessengerUI.ViewModels
 {
     public class ChatViewModel : BindableBase
     {
+        [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ExitMessenger();
+
         private OnlineUsersControl _onlineUsersCtrl;
         public OnlineUsersControl OnlineUsersCtrl
         {
@@ -84,6 +88,7 @@ namespace MessengerUI.ViewModels
             UserChosenCommand = new DelegateCommand(PerformUserChosen).ObservesProperty(() => SelectedUser);
 
             eventAggregator.GetEvent<EnterChatEvent>().Subscribe(EnterChatEventHandler);
+            eventAggregator.GetEvent<ExitChatEvent>().Subscribe(ExitChatEventHandler);
         }
 
         private bool CanSend()
@@ -120,8 +125,17 @@ namespace MessengerUI.ViewModels
             {
                 OnlineUsersCtrl.Update();
                 SelectedUser = -1;
+                ChatViewCtrl.Text = string.Empty;
                 RecvMessageCtrl.StartReceiving();
             }
+        }
+
+        private void ExitChatEventHandler(bool arg)
+        {
+            RecvMessageCtrl.StopReceiving();
+            ChatViewCtrl.Text = string.Empty;
+            SelectedUser = -1;
+            ExitMessenger();
         }
     }
 }

@@ -16,8 +16,7 @@ namespace MessengerUI.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
-        [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ExitMessenger();
+        private readonly IEventAggregator _eventAggregator;
 
         private bool _backButtonVisibility = false;
         public bool BackButtonVisibility
@@ -42,8 +41,9 @@ namespace MessengerUI.ViewModels
         public MainWindowViewModel(IRegionManager regionManager, IEventAggregator eventAggregator)
         {
             _regionManager = regionManager;
+            _eventAggregator = eventAggregator;
 
-            eventAggregator.GetEvent<EnterChatEvent>().Subscribe(EnterChatEventHandler);
+            _eventAggregator.GetEvent<EnterChatEvent>().Subscribe(EnterChatEventHandler);
 
             BackButtonClickCommand = new DelegateCommand(BackButtonClickHandler);
             NavigateCommand = new DelegateCommand<string>(Navigate);
@@ -57,9 +57,10 @@ namespace MessengerUI.ViewModels
 
         private void BackButtonClickHandler()
         {
-            ExitMessenger();
             Navigate("LoginView");
             BackButtonVisibility = false;
+
+            _eventAggregator.GetEvent<ExitChatEvent>().Publish(true);
         }
 
         private static string TranslateEnterCode(int code)

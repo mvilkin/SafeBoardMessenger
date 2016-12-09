@@ -1,22 +1,23 @@
 #include "ClientInterface.h"
 #include "Client.h"
 
-static Client its_me;
+static Client* its_me;
 
 int EnterMessenger(char* login, char* password, char* server)
 {
-	return its_me.EnterMessenger(login, password, server);
+	its_me = new Client;
+	return its_me->EnterMessenger(login, password, server);
 }
 
 void ExitMessenger()
 {
-	return its_me.ExitMessenger();
+	return its_me->ExitMessenger();
 }
 
 void SendMessage(char* to, char* msg, OnMessageSentCallback callback)
 {
-	its_me.SendMessage(to, msg);
-	auto text = its_me.MessagesToText(to);
+	its_me->SendMessage(to, msg);
+	auto text = its_me->MessagesToText(to);
 	callback(text.c_str());
 }
 
@@ -24,17 +25,15 @@ void ReceiveNewMessages(char* from, OnMessageReceivedCallback callback)
 {
 	while (true)
 	{
-		auto text = its_me.MessagesToText(from);
+		auto text = its_me->MessagesToText(from);
 		callback(text.c_str());
-		its_me.ReadNewMessages(from);
+		its_me->ReadNewMessages(from);
 	}
 }
 
 void GetOnlineUsersString(char* usersString, int* usersStringSize)
 {
-	static messenger::UserList list;
-	if (!usersString)
-		list = its_me.GetActiveUsers(true);
+	messenger::UserList list = its_me->GetActiveUsers(!usersString);
 
 	std::string listString;
 	for (auto& user : list)

@@ -20,7 +20,6 @@ public:
 	int EnterMessenger(const std::string& login, const std::string& password, const std::string& server);
 	void ExitMessenger();
 	void SendMessage(std::string user, std::string msg);
-	std::string ReceiveMessage();
 	messenger::UserList GetActiveUsers(bool update);
 	void ReadNewMessages(std::string fromUserId);
 	std::string MessagesToText(std::string fromUserId);
@@ -39,7 +38,6 @@ private:
 	std::condition_variable m_cv_usr;
 	bool m_ready;
 	messenger::operation_result::Type m_enter_res;
-	std::string m_receivedMsg;
 	messenger::UserList m_userList;
 	std::unordered_map<messenger::UserId, std::vector<MyMessageInfo> > m_map_chat;
 	std::unordered_map<messenger::UserId, std::vector<MyMessageInfo> > m_map_new_msg;
