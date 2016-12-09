@@ -103,6 +103,7 @@
     </ApplicationDefinition>
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Controls\ChatViewControl.cs" />
+    <Compile Include="Controls\ExitControl.cs" />
     <Compile Include="Controls\LoginControl.cs" />
     <Compile Include="Controls\OnlineUsersControl.cs" />
     <Compile Include="Controls\RecvMessageControl.cs" />

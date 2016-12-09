@@ -7,8 +7,6 @@
 #define MSGBASE_API __declspec(dllimport)
 #endif
 
-#include <string>
-
 extern "C"
 {
 	typedef char* (__stdcall * OnMessageReceivedCallback)(const char*);

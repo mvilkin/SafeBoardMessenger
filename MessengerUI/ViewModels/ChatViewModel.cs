@@ -16,9 +16,6 @@ namespace MessengerUI.ViewModels
 {
     public class ChatViewModel : BindableBase
     {
-        [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void ExitMessenger();
-
         private OnlineUsersControl _onlineUsersCtrl;
         public OnlineUsersControl OnlineUsersCtrl
         {
@@ -69,6 +66,8 @@ namespace MessengerUI.ViewModels
             set { SetProperty(ref _selectedUser, value); }
         }
 
+        public ExitControl ExitCtrl;
+
         public ICommand SendMessageCommand { get; set; }
         public ICommand UpdateUsersCommand { get; set; }
         public ICommand UserChosenCommand { get; set; }
@@ -79,6 +78,7 @@ namespace MessengerUI.ViewModels
             SendMessageCtrl = new SendMessageControl();
             RecvMessageCtrl = new RecvMessageControl();
             ChatViewCtrl = new ChatViewControl();
+            ExitCtrl = new ExitControl();
 
             SendMessageCtrl.ChatViewCtrl = ChatViewCtrl;
             RecvMessageCtrl.ChatViewCtrl = ChatViewCtrl;
@@ -114,7 +114,6 @@ namespace MessengerUI.ViewModels
                 RecvMessageCtrl.StopReceiving();
                 RecvMessageCtrl.Sender = OnlineUsersCtrl.OnlineUsers[SelectedUser];
                 SendMessageCtrl.Recipient = OnlineUsersCtrl.OnlineUsers[SelectedUser];
-                ChatViewCtrl.Text = string.Empty;
                 RecvMessageCtrl.StartReceiving();
             }
         }
@@ -126,16 +125,13 @@ namespace MessengerUI.ViewModels
                 OnlineUsersCtrl.Update();
                 SelectedUser = -1;
                 ChatViewCtrl.Text = string.Empty;
-                RecvMessageCtrl.StartReceiving();
             }
         }
 
         private void ExitChatEventHandler(bool arg)
         {
             RecvMessageCtrl.StopReceiving();
-            ChatViewCtrl.Text = string.Empty;
-            SelectedUser = -1;
-            ExitMessenger();
+            ExitCtrl.Exit();
         }
     }
 }

@@ -98,7 +98,7 @@ std::string Client::MessagesToText(std::string fromUserId)
 		std::string text;
 		text.assign(reinterpret_cast<const char*>(&msg.content.data[0]), msg.content.data.size());
 		if (m_map_msg_statuses[msg.identifier] == messenger::message_status::FailedToSend)
-			text += " *** Fail sending ***";
+			text += " *** Failed to send ***";
 		else if (m_map_msg_statuses[msg.identifier] != messenger::message_status::Seen)
 			text += " *** Not seen yet ***";
 		result += text + "\n";
