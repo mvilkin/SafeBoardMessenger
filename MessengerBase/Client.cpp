@@ -2,6 +2,7 @@
 
 Client::Client() :
 	m_ready(false),
+	m_status_changed(false),
 	m_enter_res(messenger::operation_result::Ok)
 {
 }
@@ -48,15 +49,7 @@ void Client::SendMessage(std::string user, std::string msg)
 
 	messenger::Message msg_info = m_messenger->SendMessage(user, message);
 
-
-	MyMessageInfo info;
-	info.message.identifier = msg_info.identifier;
-	info.message.time = msg_info.time;
-	info.message.content.type = msg_info.content.type;
-	info.message.content.encrypted = msg_info.content.encrypted;
-	info.message.content.data = msg_info.content.data;
-	info.status = messenger::message_status::Sending;
-	m_map_chat[user].push_back(info);
+	m_map_chat[user].push_back(msg_info);
 }
 
 messenger::UserList Client::GetActiveUsers(bool update)
@@ -77,15 +70,16 @@ messenger::UserList Client::GetActiveUsers(bool update)
 void Client::ReadNewMessages(std::string fromUserId)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
-	while (m_map_new_msg[fromUserId].empty())
+	m_status_changed = false;
+	while (m_map_new_msg[fromUserId].empty() && !m_status_changed)
 	{
 		m_cv_msg.wait(lock);
 	}
 
 	for (auto& msg : m_map_new_msg[fromUserId])
 	{
-		m_messenger->SendMessageSeen(fromUserId, msg.message.identifier);
-		msg.status = messenger::message_status::Seen;
+		m_messenger->SendMessageSeen(fromUserId, msg.identifier);
+		m_map_msg_statuses[msg.identifier] = messenger::message_status::Seen;
 	}
 
 	m_map_chat[fromUserId].insert(m_map_chat[fromUserId].end(), 
@@ -102,7 +96,11 @@ std::string Client::MessagesToText(std::string fromUserId)
 	for (auto& msg : m_map_chat[fromUserId])
 	{
 		std::string text;
-		text.assign(reinterpret_cast<const char*>(&msg.message.content.data[0]), msg.message.content.data.size());
+		text.assign(reinterpret_cast<const char*>(&msg.content.data[0]), msg.content.data.size());
+		if (m_map_msg_statuses[msg.identifier] == messenger::message_status::FailedToSend)
+			text += " *** Fail sending ***";
+		else if (m_map_msg_statuses[msg.identifier] != messenger::message_status::Seen)
+			text += " *** Not seen yet ***";
 		result += text + "\n";
 	}
 
@@ -127,21 +125,23 @@ void Client::OnOperationResult(messenger::operation_result::Type result, const m
 void Client::OnMessageStatusChanged(const messenger::MessageId& msgId, messenger::message_status::Type status)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
-	m_cv.notify_all();
+	m_map_msg_statuses[msgId] = status;
+	if (status == messenger::message_status::Seen || status == messenger::message_status::FailedToSend)
+		m_status_changed = true;
+	m_cv_msg.notify_all();
 }
 
 void Client::OnMessageReceived(const messenger::UserId& senderId, const messenger::Message& msg)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 
-	MyMessageInfo info;
-	info.message.identifier = msg.identifier;
-	info.message.time = msg.time;
-	info.message.content.type = msg.content.type;
-	info.message.content.encrypted = msg.content.encrypted;
-	info.message.content.data = msg.content.data;
-	info.status = messenger::message_status::Delivered;
-	m_map_new_msg[senderId].push_back(info);
+	messenger::Message message;
+	message.identifier = msg.identifier;
+	message.time = msg.time;
+	message.content.type = msg.content.type;
+	message.content.encrypted = msg.content.encrypted;
+	message.content.data = msg.content.data;
+	m_map_new_msg[senderId].push_back(message);
 
 	m_cv_msg.notify_all();
 }

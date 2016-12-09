@@ -5,12 +5,6 @@
 #include <future>
 #include <unordered_map>
 
-struct MyMessageInfo
-{
-	messenger::Message message;
-	messenger::message_status::Type status;
-};
-
 class Client : public messenger::ILoginCallback, messenger::IMessagesObserver, messenger::IRequestUsersCallback
 {
 public:
@@ -37,10 +31,12 @@ private:
 	std::condition_variable m_cv_msg;
 	std::condition_variable m_cv_usr;
 	bool m_ready;
+	bool m_status_changed;
 	messenger::operation_result::Type m_enter_res;
 	messenger::UserList m_userList;
-	std::unordered_map<messenger::UserId, std::vector<MyMessageInfo> > m_map_chat;
-	std::unordered_map<messenger::UserId, std::vector<MyMessageInfo> > m_map_new_msg;
+	std::unordered_map<messenger::MessageId, messenger::message_status::Type> m_map_msg_statuses;
+	std::unordered_map<messenger::UserId, std::vector<messenger::Message> > m_map_chat;
+	std::unordered_map<messenger::UserId, std::vector<messenger::Message> > m_map_new_msg;
 };
 
 #endif // _MESSENGERBASE_CLIENT_H_
