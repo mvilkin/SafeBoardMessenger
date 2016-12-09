@@ -89,6 +89,7 @@ namespace MessengerUI.ViewModels
 
             eventAggregator.GetEvent<EnterChatEvent>().Subscribe(EnterChatEventHandler);
             eventAggregator.GetEvent<ExitChatEvent>().Subscribe(ExitChatEventHandler);
+            eventAggregator.GetEvent<CloseApplicationEvent>().Subscribe(CloseApplicationEventHandler);
         }
 
         private bool CanSend()
@@ -129,6 +130,12 @@ namespace MessengerUI.ViewModels
         }
 
         private void ExitChatEventHandler(bool arg)
+        {
+            RecvMessageCtrl.StopReceiving();
+            ExitCtrl.Exit();
+        }
+
+        private void CloseApplicationEventHandler(bool arg)
         {
             RecvMessageCtrl.StopReceiving();
             ExitCtrl.Exit();

@@ -27,7 +27,7 @@ namespace MessengerUI.Controls
             set { SetProperty(ref _password, value); }
         }
 
-        private string _server;
+        private string _server = "127.0.0.1";
         public string Server
         {
             get { return _server; }

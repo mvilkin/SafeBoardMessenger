@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Permissions;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,7 +16,9 @@ namespace MessengerUI.Controls
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate void OnMessageReceived(string message);
         [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void ReceiveNewMessages(StringBuilder from, OnMessageReceived callbackPointer);
+        static extern void StartReceiveNewMessages(StringBuilder from, OnMessageReceived callbackPointer);
+        [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
+        static extern void StopReceiveNewMessages();
 
         private ChatViewControl _chatViewCtrl;
         public ChatViewControl ChatViewCtrl
@@ -31,20 +34,23 @@ namespace MessengerUI.Controls
             set { SetProperty(ref _sender, value); }
         }
 
-        private CancellationTokenSource _cancellToken;
+        private Thread _receivingThread;
 
         public void StartReceiving()
         {
+            _receivingThread = new Thread(ReceivingProcess);
+            _receivingThread.Start();
+        }
+
+        private void ReceivingProcess()
+        {
             OnMessageReceived recvCallback = message => { ChatViewCtrl.Text = message; };
-            _cancellToken = new CancellationTokenSource();
-            Task.Factory.StartNew(() => { ReceiveNewMessages(new StringBuilder(Sender), recvCallback); }, _cancellToken.Token);
+            StartReceiveNewMessages(new StringBuilder(Sender), recvCallback);
         }
 
         public void StopReceiving()
         {
-            if (_cancellToken != null)
-                _cancellToken.Cancel();
-            _cancellToken = null;
+            StopReceiveNewMessages();
         }
     }
 }

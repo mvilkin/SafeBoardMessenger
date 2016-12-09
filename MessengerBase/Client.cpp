@@ -1,7 +1,7 @@
 #include "Client.h"
 
 Client::Client() :
-	m_ready(false),
+	m_inited(false),
 	m_status_changed(false),
 	m_enter_res(messenger::operation_result::Ok)
 {
@@ -16,21 +16,24 @@ Client::~Client()
 int Client::EnterMessenger(const std::string& login, const std::string& password, const std::string& server)
 {
 	messenger::MessengerSettings settings;
-	settings.serverUrl = "127.0.0.1";
+	settings.serverUrl = server;
+	settings.serverPort = 0;
 	m_messenger = messenger::GetMessengerInstance(settings);
 
 	messenger::SecurityPolicy securityPolicy;
-	m_messenger->Login((login + "@localhost").c_str(), "", securityPolicy, this);
+	std::string full_login = login;
+	if (login.find_first_of('@') == std::string::npos)
+		full_login += "@localhost";
+	m_messenger->Login(full_login, password, securityPolicy, this);
 
-	m_ready = false;
+	m_inited = false;
 	std::unique_lock<std::mutex> lock(m_mutex);
-	while (!m_ready)
+	while (!m_inited)
 	{
-		m_cv.wait(lock);
+		m_cv_init.wait(lock);
 	}
 
 	m_messenger->RegisterObserver(this);
-
 	return m_enter_res;
 }
 
@@ -41,15 +44,15 @@ void Client::ExitMessenger()
 	m_messenger.reset();
 }
 
-void Client::SendMessage(std::string user, std::string msg)
+void Client::SendMessage(std::string user, std::string message)
 {
-	messenger::MessageContent message;
-	message.type = messenger::message_content_type::Text;
-	std::copy(msg.begin(), msg.end(), std::back_inserter(message.data));
+	messenger::MessageContent message_content;
+	message_content.type = messenger::message_content_type::Text;
+	std::copy(message.begin(), message.end(), std::back_inserter(message_content.data));
 
-	messenger::Message msg_info = m_messenger->SendMessage(user, message);
+	messenger::Message msg = m_messenger->SendMessage(user, message_content);
 
-	m_map_chat[user].push_back(msg_info);
+	m_map_chat[user].push_back(msg);
 }
 
 messenger::UserList Client::GetActiveUsers(bool update)
@@ -67,33 +70,47 @@ messenger::UserList Client::GetActiveUsers(bool update)
 	return m_userList;
 }
 
-void Client::ReadNewMessages(std::string fromUserId)
+void Client::StartReceivingProcess()
+{
+	m_recv_process = true;
+}
+
+void Client::StopReceivingProcess()
+{
+	std::unique_lock<std::mutex> lock(m_mutex);
+	m_recv_process = false;
+	m_cv_msg.notify_all();
+}
+
+bool Client::ReadNewMessages(std::string user)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	m_status_changed = false;
-	while (m_map_new_msg[fromUserId].empty() && !m_status_changed)
+	while (m_map_new_msg[user].empty() && !m_status_changed && m_recv_process)
 	{
 		m_cv_msg.wait(lock);
 	}
 
-	for (auto& msg : m_map_new_msg[fromUserId])
+	for (auto& msg : m_map_new_msg[user])
 	{
-		m_messenger->SendMessageSeen(fromUserId, msg.identifier);
+		m_messenger->SendMessageSeen(user, msg.identifier);
 		m_map_msg_statuses[msg.identifier] = messenger::message_status::Seen;
 	}
 
-	m_map_chat[fromUserId].insert(m_map_chat[fromUserId].end(), 
-		std::make_move_iterator(m_map_new_msg[fromUserId].begin()), 
-		std::make_move_iterator(m_map_new_msg[fromUserId].end()));
+	m_map_chat[user].insert(m_map_chat[user].end(),
+		std::make_move_iterator(m_map_new_msg[user].begin()),
+		std::make_move_iterator(m_map_new_msg[user].end()));
 
-	m_map_new_msg[fromUserId].clear();
+	m_map_new_msg[user].clear();
+
+	return m_recv_process;
 }
 
-std::string Client::MessagesToText(std::string fromUserId)
+std::string Client::MessagesToText(std::string user)
 {
 	std::string result;
 
-	for (auto& msg : m_map_chat[fromUserId])
+	for (auto& msg : m_map_chat[user])
 	{
 		std::string text;
 		text.assign(reinterpret_cast<const char*>(&msg.content.data[0]), msg.content.data.size());
@@ -111,14 +128,21 @@ void Client::OnOperationResult(messenger::operation_result::Type result)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
 	m_enter_res = result;
-	m_ready = true;
-	m_cv.notify_all();
+	m_inited = true;
+	m_cv_init.notify_all();
 }
 
 void Client::OnOperationResult(messenger::operation_result::Type result, const messenger::UserList& users)
 {
 	std::unique_lock<std::mutex> lock(m_mutex);
-	m_userList = users;
+	if (result == messenger::operation_result::Ok)
+	{
+		m_userList = users;
+	}
+	else
+	{
+		m_userList.push_back(messenger::User());
+	}
 	m_cv_usr.notify_all();
 }
 

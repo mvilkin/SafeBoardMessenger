@@ -37,6 +37,7 @@ namespace MessengerUI.ViewModels
         public DelegateCommand<string> NavigateCommand { get; set; }
         public ICommand EnterMessengerCommand { get; set; }
         public ICommand BackButtonClickCommand { get; set; }
+        public ICommand CloseApplicationCommand { get; set; }
 
         public MainWindowViewModel(IRegionManager regionManager, IEventAggregator eventAggregator)
         {
@@ -48,6 +49,7 @@ namespace MessengerUI.ViewModels
             BackButtonClickCommand = new DelegateCommand(BackButtonClickHandler);
             NavigateCommand = new DelegateCommand<string>(Navigate);
             EnterMessengerCommand = new DelegateCommand(PerformEnterMessenger);
+            CloseApplicationCommand = new DelegateCommand(CloseApplicationHandler);
         }
 
         private void Navigate(string uri)
@@ -66,6 +68,11 @@ namespace MessengerUI.ViewModels
         private static string TranslateEnterCode(int code)
         {
             return "Sorry, error #" + code + " occured!";
+        }
+
+        private void CloseApplicationHandler()
+        {
+            _eventAggregator.GetEvent<CloseApplicationEvent>().Publish(true);
         }
 
         private void EnterChatEventHandler(int enterCode)

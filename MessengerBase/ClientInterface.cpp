@@ -1,7 +1,7 @@
 #include "ClientInterface.h"
 #include "Client.h"
 
-static Client* current_client;
+static Client* current_client = nullptr;
 
 int EnterMessenger(char* login, char* password, char* server)
 {
@@ -17,7 +17,8 @@ void ExitMessenger()
 	if (!current_client)
 		return;
 
-	return current_client->ExitMessenger();
+	current_client->ExitMessenger();
+	delete current_client;
 }
 
 void SendMessage(char* to, char* msg, OnMessageSentCallback callback)
@@ -30,17 +31,27 @@ void SendMessage(char* to, char* msg, OnMessageSentCallback callback)
 	callback(text.c_str());
 }
 
-void ReceiveNewMessages(char* from, OnMessageReceivedCallback callback)
+void StartReceiveNewMessages(char* from, OnMessageReceivedCallback callback)
 {
 	if (!current_client)
 		return;
 
-	while (true)
+	current_client->StartReceivingProcess();
+	bool recv_process = true;
+	while (recv_process)
 	{
 		auto text = current_client->MessagesToText(from);
 		callback(text.c_str());
-		current_client->ReadNewMessages(from);
+		recv_process = current_client->ReadNewMessages(from);
 	}
+}
+
+void StopReceiveNewMessages()
+{
+	if (!current_client)
+		return;
+
+	current_client->StopReceivingProcess();
 }
 
 void GetOnlineUsersString(char* usersString, int* usersStringSize)

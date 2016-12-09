@@ -20,7 +20,8 @@ extern "C"
 	MSGBASE_API int EnterMessenger(IN char* login, IN char* password, IN char* server);
 	MSGBASE_API void ExitMessenger();
 	MSGBASE_API void SendMessage(IN char* user, IN char* message, IN OnMessageSentCallback callback);
-	MSGBASE_API void ReceiveNewMessages(IN char* user, IN OnMessageReceivedCallback callback);
+	MSGBASE_API void StartReceiveNewMessages(IN char* user, IN OnMessageReceivedCallback callback);
+	MSGBASE_API void StopReceiveNewMessages();
 	MSGBASE_API void GetOnlineUsersString(OUT char* users, OUT int* usersStringSize);
 }
 
