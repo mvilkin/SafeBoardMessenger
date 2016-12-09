@@ -87,6 +87,7 @@
   <ItemGroup>
     <ClInclude Include="Client.h" />
     <ClInclude Include="ClientInterface.h" />
+    <ClInclude Include="compatibility.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

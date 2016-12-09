@@ -16,13 +16,15 @@ extern "C"
 {
 	typedef char* (__stdcall * OnMessageReceivedCallback)(const char*);
 	typedef char* (__stdcall * OnMessageSentCallback)(const char*);
+	typedef char* (__stdcall * OnUserUpdate)(const char*);
 
 	MSGBASE_API int EnterMessenger(IN char* login, IN char* password, IN char* server);
 	MSGBASE_API void ExitMessenger();
-	MSGBASE_API void SendMessage(IN char* user, IN char* message, IN OnMessageSentCallback callback);
+	MSGBASE_API void SendNewMessage(IN char* user, IN char* message, IN OnMessageSentCallback callback);
 	MSGBASE_API void StartReceiveNewMessages(IN char* user, IN OnMessageReceivedCallback callback);
 	MSGBASE_API void StopReceiveNewMessages();
-	MSGBASE_API void GetOnlineUsersString(OUT char* users, OUT int* usersStringSize);
+	MSGBASE_API void StartGetOnlineUsers(IN OnUserUpdate callback);
+	MSGBASE_API void StopGetOnlineUsers();
 }
 
 #endif // _MESSENGERBASE_CLIENT_INTERFACE_H_

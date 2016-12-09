@@ -3,6 +3,8 @@
 Client::Client() :
 	m_inited(false),
 	m_status_changed(false),
+	m_recv_process(false),
+	m_update_process(false),
 	m_enter_res(messenger::operation_result::Ok)
 {
 }
@@ -44,7 +46,7 @@ void Client::ExitMessenger()
 	m_messenger.reset();
 }
 
-void Client::SendMessage(std::string user, std::string message)
+void Client::SendNewMessage(std::string user, std::string message)
 {
 	messenger::MessageContent message_content;
 	message_content.type = messenger::message_content_type::Text;
@@ -55,19 +57,37 @@ void Client::SendMessage(std::string user, std::string message)
 	m_map_chat[user].push_back(msg);
 }
 
-messenger::UserList Client::GetActiveUsers(bool update)
+void Client::StartUpdatingProcess()
 {
-	if (update)
+	m_update_process = true;
+}
+
+void Client::StopUpdatingProcess()
+{
+	std::unique_lock<std::mutex> lock(m_mutex);
+	m_update_process = false;
+	m_cv_usr.notify_all();
+}
+
+messenger::UserList Client::GetActiveUsers()
+{
+	std::unique_lock<std::mutex> lock(m_mutex);
+	m_userList.clear();
+	while (m_userList.empty() && m_update_process)
 	{
-		std::unique_lock<std::mutex> lock(m_mutex);
-		m_userList.clear();
 		m_messenger->RequestActiveUsers(this);
-		while (m_userList.empty())
-		{
-			m_cv_usr.wait(lock);
-		}
+		m_cv_usr.wait(lock);
 	}
+	
+	if (!m_update_process)
+		m_userList.clear();
+
 	return m_userList;
+}
+
+bool Client::CheckUserNewMessages(messenger::UserId user)
+{
+	return !m_map_new_msg[user].empty();
 }
 
 void Client::StartReceivingProcess()

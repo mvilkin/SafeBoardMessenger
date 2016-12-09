@@ -1,5 +1,6 @@
 #include "ClientInterface.h"
 #include "Client.h"
+#include "compatibility.h"
 
 static Client* current_client = nullptr;
 
@@ -21,17 +22,17 @@ void ExitMessenger()
 	delete current_client;
 }
 
-void SendMessage(char* to, char* msg, OnMessageSentCallback callback)
+void SendNewMessage(char* user, char* message, OnMessageSentCallback callback)
 {
 	if (!current_client)
 		return;
 
-	current_client->SendMessage(to, msg);
-	auto text = current_client->MessagesToText(to);
+	current_client->SendNewMessage(user, message);
+	auto text = current_client->MessagesToText(user);
 	callback(text.c_str());
 }
 
-void StartReceiveNewMessages(char* from, OnMessageReceivedCallback callback)
+void StartReceiveNewMessages(char* user, OnMessageReceivedCallback callback)
 {
 	if (!current_client)
 		return;
@@ -40,9 +41,9 @@ void StartReceiveNewMessages(char* from, OnMessageReceivedCallback callback)
 	bool recv_process = true;
 	while (recv_process)
 	{
-		auto text = current_client->MessagesToText(from);
+		auto text = current_client->MessagesToText(user);
 		callback(text.c_str());
-		recv_process = current_client->ReadNewMessages(from);
+		recv_process = current_client->ReadNewMessages(user);
 	}
 }
 
@@ -54,26 +55,64 @@ void StopReceiveNewMessages()
 	current_client->StopReceivingProcess();
 }
 
-void GetOnlineUsersString(char* usersString, int* usersStringSize)
+void StartGetOnlineUsers(OnUserUpdate callback)
 {
 	if (!current_client)
 		return;
 
-	messenger::UserList list = current_client->GetActiveUsers(!usersString);
+	current_client->StartUpdatingProcess();
+	while (true)
+	{
+		messenger::UserList list = current_client->GetActiveUsers();
+		if (list.empty())
+			break;
+
+		std::string listString;
+		for (auto& user : list)
+		{
+			if (current_client->CheckUserNewMessages(user.identifier))
+				listString += "** ";
+			listString += user.identifier + ';';
+		}
+		listString.pop_back();
+
+		callback(listString.c_str());
+		sleep(1000);
+	}
+}
+
+void StopGetOnlineUsers()
+{
+	if (!current_client)
+		return;
+
+	current_client->StopUpdatingProcess();
+}
+
+/*
+void GetOnlineUsersString(char* users, int* users_size)
+{
+	if (!current_client)
+		return;
+
+	messenger::UserList list = current_client->GetActiveUsers(!users);
 
 	std::string listString;
 	for (auto& user : list)
 	{
+		if (current_client->CheckUserNewMessages(user.identifier))
+			listString += '** ';
 		listString += user.identifier + ';';
 	}
 	listString.pop_back();
 	
-	if (usersStringSize)
-		*usersStringSize = listString.length() + 1;
+	if (users_size)
+		*users_size = listString.length() + 1;
 
-	if (usersString)
+	if (users)
 	{
-		memset(usersString, 0, listString.length() + 1);
-		memcpy(usersString, listString.c_str(), listString.length());
+		memset(users, 0, listString.length() + 1);
+		memcpy(users, listString.c_str(), listString.length());
 	}
 }
+*/

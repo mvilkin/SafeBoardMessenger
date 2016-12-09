@@ -16,7 +16,7 @@ namespace MessengerUI.Controls
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         delegate void OnMessageReceived(string message);
         [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void StartReceiveNewMessages(StringBuilder from, OnMessageReceived callbackPointer);
+        static extern void StartReceiveNewMessages(StringBuilder from, OnMessageReceived callback);
         [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void StopReceiveNewMessages();
 

@@ -13,12 +13,17 @@ public:
 
 	int EnterMessenger(const std::string& login, const std::string& password, const std::string& server);
 	void ExitMessenger();
-	void SendMessage(std::string user, std::string message);
-	messenger::UserList GetActiveUsers(bool update);
+	void SendNewMessage(std::string user, std::string message);
+
 	void StartReceivingProcess();
 	void StopReceivingProcess();
 	bool ReadNewMessages(std::string user);
 	std::string MessagesToText(std::string user);
+
+	void StartUpdatingProcess();
+	void StopUpdatingProcess();
+	messenger::UserList GetActiveUsers();
+	bool CheckUserNewMessages(messenger::UserId user);
 
 	void OnOperationResult(messenger::operation_result::Type result) override;
 	void OnOperationResult(messenger::operation_result::Type result, const messenger::UserList& users) override;
@@ -35,6 +40,7 @@ private:
 	bool m_inited;
 	bool m_status_changed;
 	bool m_recv_process;
+	bool m_update_process;
 	messenger::operation_result::Type m_enter_res;
 	messenger::UserList m_userList;
 	std::unordered_map<messenger::MessageId, messenger::message_status::Type> m_map_msg_statuses;

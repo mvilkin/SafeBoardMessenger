@@ -99,7 +99,6 @@ namespace MessengerUI.ViewModels
 
         private void PerformUpdateUsers()
         {
-            OnlineUsersCtrl.Update();
             SelectedUser = -1;
         }
 
@@ -113,8 +112,8 @@ namespace MessengerUI.ViewModels
             if (SelectedUser >= 0)
             {
                 RecvMessageCtrl.StopReceiving();
-                RecvMessageCtrl.Sender = OnlineUsersCtrl.OnlineUsers[SelectedUser];
-                SendMessageCtrl.Recipient = OnlineUsersCtrl.OnlineUsers[SelectedUser];
+                RecvMessageCtrl.Sender = OnlineUsersCtrl.GetUserByIndex(SelectedUser);
+                SendMessageCtrl.Recipient = OnlineUsersCtrl.GetUserByIndex(SelectedUser);
                 RecvMessageCtrl.StartReceiving();
             }
         }
@@ -123,7 +122,7 @@ namespace MessengerUI.ViewModels
         {
             if (enterCode == 0)
             {
-                OnlineUsersCtrl.Update();
+                OnlineUsersCtrl.StartUpdating();
                 SelectedUser = -1;
                 ChatViewCtrl.Text = string.Empty;
             }
@@ -132,12 +131,14 @@ namespace MessengerUI.ViewModels
         private void ExitChatEventHandler(bool arg)
         {
             RecvMessageCtrl.StopReceiving();
+            OnlineUsersCtrl.StopUpdating();
             ExitCtrl.Exit();
         }
 
         private void CloseApplicationEventHandler(bool arg)
         {
             RecvMessageCtrl.StopReceiving();
+            OnlineUsersCtrl.StopUpdating();
             ExitCtrl.Exit();
         }
     }
