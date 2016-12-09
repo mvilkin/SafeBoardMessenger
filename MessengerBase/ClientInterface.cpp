@@ -1,39 +1,54 @@
 #include "ClientInterface.h"
 #include "Client.h"
 
-static Client* its_me;
+static Client* current_client;
 
 int EnterMessenger(char* login, char* password, char* server)
 {
-	its_me = new Client;
-	return its_me->EnterMessenger(login, password, server);
+	if (!!current_client)
+		return messenger::operation_result::InternalError;
+
+	current_client = new Client;
+	return current_client->EnterMessenger(login, password, server);
 }
 
 void ExitMessenger()
 {
-	return its_me->ExitMessenger();
+	if (!current_client)
+		return;
+
+	return current_client->ExitMessenger();
 }
 
 void SendMessage(char* to, char* msg, OnMessageSentCallback callback)
 {
-	its_me->SendMessage(to, msg);
-	auto text = its_me->MessagesToText(to);
+	if (!current_client)
+		return;
+
+	current_client->SendMessage(to, msg);
+	auto text = current_client->MessagesToText(to);
 	callback(text.c_str());
 }
 
 void ReceiveNewMessages(char* from, OnMessageReceivedCallback callback)
 {
+	if (!current_client)
+		return;
+
 	while (true)
 	{
-		auto text = its_me->MessagesToText(from);
+		auto text = current_client->MessagesToText(from);
 		callback(text.c_str());
-		its_me->ReadNewMessages(from);
+		current_client->ReadNewMessages(from);
 	}
 }
 
 void GetOnlineUsersString(char* usersString, int* usersStringSize)
 {
-	messenger::UserList list = its_me->GetActiveUsers(!usersString);
+	if (!current_client)
+		return;
+
+	messenger::UserList list = current_client->GetActiveUsers(!usersString);
 
 	std::string listString;
 	for (auto& user : list)
