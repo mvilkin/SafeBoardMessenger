@@ -11,15 +11,15 @@ namespace MessengerUI.Controls
 {
     public class OnlineUsersControl : BindableBase
     {
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        delegate void OnUserUpdate(string users);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Unicode)]
+        delegate void OnUserUpdate(StringBuilder users);
         [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void StartGetOnlineUsers(OnUserUpdate callback);
         [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
         static extern void StopGetOnlineUsers();
 
-        private string[] _onlineUsers;
-        public string[] OnlineUsers
+        private String[] _onlineUsers;
+        public String[] OnlineUsers
         {
             get { return _onlineUsers; }
             set { SetProperty(ref _onlineUsers, value); }
@@ -27,9 +27,9 @@ namespace MessengerUI.Controls
 
         private Thread _updatingThread;
 
-        public string GetUserByIndex(int index)
+        public String GetUserByIndex(int index)
         {
-            string user = OnlineUsers[index];
+            String user = OnlineUsers[index];
             if (OnlineUsers[index].StartsWith("** "))
                 user = user.Remove(0, 3);
             return user;

@@ -14,14 +14,14 @@
 
 extern "C"
 {
-	typedef char* (__stdcall * OnMessageReceivedCallback)(const char*);
-	typedef char* (__stdcall * OnMessageSentCallback)(const char*);
-	typedef char* (__stdcall * OnUserUpdate)(const char*);
+	typedef char* (__stdcall * OnMessageReceivedCallback)(const wchar_t*);
+	typedef char* (__stdcall * OnMessageSentCallback)(const wchar_t*);
+	typedef char* (__stdcall * OnUserUpdate)(const wchar_t*);
 
-	MSGBASE_API int EnterMessenger(IN char* login, IN char* password, IN char* server);
+	MSGBASE_API int EnterMessenger(IN wchar_t* login, IN wchar_t* password, IN wchar_t* server);
 	MSGBASE_API void ExitMessenger();
-	MSGBASE_API void SendNewMessage(IN char* user, IN char* message, IN OnMessageSentCallback callback);
-	MSGBASE_API void StartReceiveNewMessages(IN char* user, IN OnMessageReceivedCallback callback);
+	MSGBASE_API void SendNewMessage(IN wchar_t* user, IN wchar_t* message, IN OnMessageSentCallback callback);
+	MSGBASE_API void StartReceiveNewMessages(IN wchar_t* user, IN OnMessageReceivedCallback callback);
 	MSGBASE_API void StopReceiveNewMessages();
 	MSGBASE_API void StartGetOnlineUsers(IN OnUserUpdate callback);
 	MSGBASE_API void StopGetOnlineUsers();

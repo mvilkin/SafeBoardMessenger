@@ -10,10 +10,10 @@ namespace MessengerUI.Controls
 {
     public class SendMessageControl : BindableBase
     {
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        delegate void OnMessageSent(string message);
-        [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
-        static extern void SendNewMessage(StringBuilder to, StringBuilder text, OnMessageSent callbackPointer);
+        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Unicode)]
+        delegate void OnMessageSent(StringBuilder message);
+        [DllImport("MessengerBase.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        static extern void SendNewMessage(StringBuilder recipient, StringBuilder text, OnMessageSent callbackPointer);
 
         private ChatViewControl _chatViewCtrl;
         public ChatViewControl ChatViewCtrl
@@ -22,15 +22,15 @@ namespace MessengerUI.Controls
             set { SetProperty(ref _chatViewCtrl, value); }
         }
 
-        private string _text;
-        public string Text
+        private String _text;
+        public String Text
         {
             get { return _text; }
             set { SetProperty(ref _text, value); }
         }
 
-        private string _recipient;
-        public string Recipient
+        private String _recipient;
+        public String Recipient
         {
             get { return _recipient; }
             set { SetProperty(ref _recipient, value); }
@@ -38,9 +38,9 @@ namespace MessengerUI.Controls
 
         public void Send()
         {
-            OnMessageSent recvCallback = message => { ChatViewCtrl.Text = message; };
+            OnMessageSent recvCallback = message => { ChatViewCtrl.Text = message.ToString(); };
             SendNewMessage(new StringBuilder(Recipient), new StringBuilder(Text), recvCallback);
-            Text = string.Empty;
+            Text = String.Empty;
         }
     }
 }

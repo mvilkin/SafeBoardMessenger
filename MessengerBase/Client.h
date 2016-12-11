@@ -11,18 +11,19 @@ public:
 	Client();
 	~Client();
 
-	int EnterMessenger(const std::string& login, const std::string& password, const std::string& server);
+	int EnterMessenger(std::wstring login, std::wstring password, std::wstring server);
 	void ExitMessenger();
-	void SendNewMessage(std::string user, std::string message);
+	void SendNewMessage(std::wstring user, std::wstring message);
 
 	void StartReceivingProcess();
 	void StopReceivingProcess();
-	bool ReadNewMessages(std::string user);
-	std::string MessagesToText(std::string user);
+	bool ReadNewMessages(std::wstring user);
+	std::wstring MessagesToText(std::wstring user);
 
 	void StartUpdatingProcess();
 	void StopUpdatingProcess();
 	messenger::UserList GetActiveUsers();
+	std::wstring GetActiveUsersString();
 	bool CheckUserNewMessages(messenger::UserId user);
 
 	void OnOperationResult(messenger::operation_result::Type result) override;
@@ -31,6 +32,9 @@ public:
 	void OnMessageReceived(const messenger::UserId& senderId, const messenger::Message& msg) override;
 
 private:
+	std::wstring NormalToWide(std::string string_to_convert);
+	std::string WideToNormal(std::wstring string_to_convert);
+
 	std::shared_ptr<messenger::IMessenger> m_messenger;
 	std::mutex m_mutex;
 	std::mutex m_mutex_msg;

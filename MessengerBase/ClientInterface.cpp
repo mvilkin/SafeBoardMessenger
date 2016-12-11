@@ -4,7 +4,7 @@
 
 static Client* current_client = nullptr;
 
-int EnterMessenger(char* login, char* password, char* server)
+int EnterMessenger(wchar_t* login, wchar_t* password, wchar_t* server)
 {
 	if (!!current_client)
 		return messenger::operation_result::InternalError;
@@ -23,7 +23,7 @@ void ExitMessenger()
 	current_client = nullptr;
 }
 
-void SendNewMessage(char* user, char* message, OnMessageSentCallback callback)
+void SendNewMessage(wchar_t* user, wchar_t* message, OnMessageSentCallback callback)
 {
 	if (!current_client)
 		return;
@@ -33,7 +33,7 @@ void SendNewMessage(char* user, char* message, OnMessageSentCallback callback)
 	callback(text.c_str());
 }
 
-void StartReceiveNewMessages(char* user, OnMessageReceivedCallback callback)
+void StartReceiveNewMessages(wchar_t* user, OnMessageReceivedCallback callback)
 {
 	if (!current_client)
 		return;
@@ -66,19 +66,7 @@ void StartGetOnlineUsers(OnUserUpdate callback)
 	{
 		if (!current_client)
 			break;
-		messenger::UserList list = current_client->GetActiveUsers();
-		if (list.empty())
-			break;
-
-		std::string listString;
-		for (auto& user : list)
-		{
-			if (current_client->CheckUserNewMessages(user.identifier))
-				listString += "** ";
-			listString += user.identifier + ';';
-		}
-		listString.pop_back();
-
+		std::wstring listString = current_client->GetActiveUsersString();
 		callback(listString.c_str());
 		sleep(1000);
 	}
@@ -91,31 +79,3 @@ void StopGetOnlineUsers()
 
 	current_client->StopUpdatingProcess();
 }
-
-/*
-void GetOnlineUsersString(char* users, int* users_size)
-{
-	if (!current_client)
-		return;
-
-	messenger::UserList list = current_client->GetActiveUsers(!users);
-
-	std::string listString;
-	for (auto& user : list)
-	{
-		if (current_client->CheckUserNewMessages(user.identifier))
-			listString += '** ';
-		listString += user.identifier + ';';
-	}
-	listString.pop_back();
-	
-	if (users_size)
-		*users_size = listString.length() + 1;
-
-	if (users)
-	{
-		memset(users, 0, listString.length() + 1);
-		memcpy(users, listString.c_str(), listString.length());
-	}
-}
-*/

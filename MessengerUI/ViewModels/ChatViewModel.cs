@@ -124,7 +124,7 @@ namespace MessengerUI.ViewModels
             {
                 OnlineUsersCtrl.StartUpdating();
                 SelectedUser = -1;
-                ChatViewCtrl.Text = string.Empty;
+                ChatViewCtrl.Text = String.Empty;
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -10,25 +11,25 @@ namespace MessengerUI.Controls
 {
     public class LoginControl : BindableBase
     {
-        [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("MessengerBase.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         public static extern int EnterMessenger(StringBuilder login, StringBuilder password, StringBuilder server);
 
-        private string _login;
-        public string Login
+        private String _login;
+        public String Login
         {
             get { return _login; }
             set { SetProperty(ref _login, value); }
         }
 
-        private string _password;
-        public string Password
+        private String _password;
+        public String Password
         {
             get { return _password; }
             set { SetProperty(ref _password, value); }
         }
 
-        private string _server = "127.0.0.1";
-        public string Server
+        private String _server = "127.0.0.1";
+        public String Server
         {
             get { return _server; }
             set { SetProperty(ref _server, value); }

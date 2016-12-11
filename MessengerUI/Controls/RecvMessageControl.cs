@@ -13,11 +13,11 @@ namespace MessengerUI.Controls
 {
     public class RecvMessageControl : BindableBase
     {
-        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
-        delegate void OnMessageReceived(string message);
-        [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Unicode)]
+        delegate void OnMessageReceived(StringBuilder message);
+        [DllImport("MessengerBase.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         static extern void StartReceiveNewMessages(StringBuilder from, OnMessageReceived callback);
-        [DllImport("MessengerBase.dll", CallingConvention = CallingConvention.Cdecl)]
+        [DllImport("MessengerBase.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         static extern void StopReceiveNewMessages();
 
         private ChatViewControl _chatViewCtrl;
@@ -27,8 +27,8 @@ namespace MessengerUI.Controls
             set { SetProperty(ref _chatViewCtrl, value); }
         }
 
-        private string _sender;
-        public string Sender
+        private String _sender;
+        public String Sender
         {
             get { return _sender; }
             set { SetProperty(ref _sender, value); }
@@ -44,8 +44,8 @@ namespace MessengerUI.Controls
 
         private void ReceivingProcess()
         {
-            OnMessageReceived recvCallback = message => { ChatViewCtrl.Text = message; };
-            StartReceiveNewMessages(new StringBuilder(Sender), recvCallback);
+            OnMessageReceived recvCallback = message => { ChatViewCtrl.Text = message.ToString(); };
+            StartReceiveNewMessages( new StringBuilder(Sender), recvCallback);
         }
 
         public void StopReceiving()
