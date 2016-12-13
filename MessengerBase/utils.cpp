@@ -27,6 +27,12 @@ bool CreateDir(std::string path)
 		ERROR_ALREADY_EXISTS == GetLastError();
 }
 
+bool CreateDir(std::wstring path)
+{
+	return CreateDirectoryW(path.c_str(), NULL) ||
+		ERROR_ALREADY_EXISTS == GetLastError();
+}
+
 #else
 
 void slepp(int msec)
@@ -39,6 +45,11 @@ std::string GetCurrentDir()
 }
 
 bool CreateDir(std::string path)
+{
+	return false;
+}
+
+bool CreateDir(std::wstring path)
 {
 	return false;
 }

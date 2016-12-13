@@ -235,9 +235,97 @@ void Client::OnMessageReceived(const messenger::UserId& user_id, const messenger
 	m_cv_msg.notify_all();
 }
 
+messenger::message_content_type::Type Client::detectFileContentType(const messenger::Data& data)
+{
+	ExtensionType data_type = detectFileExtensionType(data);
+	return data_type.type;
+}
+
+std::string Client::detectFileExtension(const messenger::Data& data)
+{
+	ExtensionType data_type = detectFileExtensionType(data);
+	std::string result;
+
+	switch (data_type.type)
+	{
+	case messenger::message_content_type::Image:
+		{
+			switch (data_type.image_type)
+			{
+			case ImageType::bmp: result = ".bmp"; break;
+			case ImageType::jpg: result = ".jpg"; break;
+			case ImageType::png: result = ".png"; break;
+			case ImageType::undef:
+			default:
+				result = ".image_undef"; break;
+			}
+			break;
+		}
+	case messenger::message_content_type::Video:
+		{
+			switch (data_type.video_type)
+			{
+			case VideoType::avi: result = ".avi"; break;
+			case VideoType::mkv: result = ".mkv"; break;
+			case VideoType::undef:
+			default:
+				result = ".video_undef"; break;
+			}
+			break;
+		}
+	default:
+		result = ".undef_undef";
+		break;
+	}
+
+	return result;
+}
+
+static bool is_begining_equal(const messenger::Data& data, const std::vector<unsigned char>& base)
+{
+	for (unsigned i = 0; i < base.size(); ++i)
+		if (data[i] != base[i])
+			return false;
+	return true;
+}
+
+ExtensionType Client::detectFileExtensionType(const messenger::Data& data)
+{
+	std::vector<unsigned char> base_bmp = { 0x42, 0x4D };
+	std::vector<unsigned char> base_png = { 0x89, 0x50, 0x4E, 0x47 };
+	std::vector<unsigned char> base_jpg1 = { 0xFF, 0xD8, 0xFF, 0xDB };
+	std::vector<unsigned char> base_jpg2 = { 0xFF, 0xD8, 0xFF, 0xE0 };
+	std::vector<unsigned char> base_jpg3 = { 0xFF, 0xD8, 0xFF, 0xE1 };
+	std::vector<unsigned char> base_avi = { 0x52, 0x49, 0x46, 0x46 };
+	std::vector<unsigned char> base_mkv = { 0x1A, 0x45, 0xDF, 0xA3 };
+
+	if (is_begining_equal(data, base_bmp))
+		return{ messenger::message_content_type::Image, { ImageType::bmp } };
+
+	if (is_begining_equal(data, base_png))
+		return{ messenger::message_content_type::Image, { ImageType::png } };
+
+	if (is_begining_equal(data, base_jpg1))
+		return{ messenger::message_content_type::Image, { ImageType::jpg } };
+
+	if (is_begining_equal(data, base_jpg2))
+		return{ messenger::message_content_type::Image, { ImageType::jpg } };
+
+	if (is_begining_equal(data, base_jpg3))
+		return{ messenger::message_content_type::Image, { ImageType::jpg } };
+
+	if (is_begining_equal(data, base_avi))
+		return{ messenger::message_content_type::Video, {}, { VideoType::avi } };
+
+	if (is_begining_equal(data, base_mkv))
+		return{ messenger::message_content_type::Video, {}, { VideoType::mkv } };
+
+	return { messenger::message_content_type::Text, { ImageType::undef }, { VideoType::undef }};
+}
+
 messenger::Data Client::readFileBinary(std::string path)
 {
-	std::ifstream file(path, std::ios::binary);
+	std::ifstream file(ConvertUTF8_UTF16(path), std::ios::binary);
 	file.unsetf(std::ios::skipws);
 
 	std::streampos size;
@@ -257,11 +345,15 @@ messenger::Data Client::readFileBinary(std::string path)
 
 std::string Client::writeFileBinary(const messenger::Data& data, time_t time)
 {
-	std::string dir_path = GetCurrentDir() + "\\images";
-	std::string file_name = dir_path + "\\image_" + std::to_string(time) + ".png";
+	std::string extension = detectFileExtension(data);
+	messenger::message_content_type::Type data_type = detectFileContentType(data);
+	std::string type = data_type == messenger::message_content_type::Video ? "video" : "image";
 
-	CreateDir(dir_path);
-	std::ofstream file(file_name, std::ios::binary);
+	std::string dir_path = GetCurrentDir() + "\\" + type + "s";
+	std::string file_name = dir_path + "\\" + type + "_" + std::to_string(time) + extension;
+
+	CreateDir(ConvertUTF8_UTF16(dir_path));
+	std::ofstream file(ConvertUTF8_UTF16(file_name), std::ios::binary);
 	file.write(reinterpret_cast<const char*>(&data[0]), data.size());
 
 	return file_name;

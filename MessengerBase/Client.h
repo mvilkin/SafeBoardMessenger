@@ -5,6 +5,34 @@
 #include <future>
 #include <unordered_map>
 
+namespace ImageType
+{
+	enum Type
+	{
+		bmp,
+		jpg,
+		png,
+		undef
+	};
+}
+
+namespace VideoType
+{
+	enum Type
+	{
+		avi,
+		mkv,
+		undef
+	};
+}
+
+struct ExtensionType
+{
+	messenger::message_content_type::Type type;
+	ImageType::Type image_type;
+	VideoType::Type video_type;
+};
+
 class Client : public messenger::ILoginCallback, messenger::IMessagesObserver, messenger::IRequestUsersCallback
 {
 public:
@@ -35,6 +63,9 @@ public:
 private:
 	static messenger::Data readFileBinary(std::string path);
 	static std::string writeFileBinary(const messenger::Data& data, time_t time);
+	static messenger::message_content_type::Type detectFileContentType(const messenger::Data& data);
+	static std::string detectFileExtension(const messenger::Data& data);
+	static ExtensionType detectFileExtensionType(const messenger::Data& data);
 
 	std::shared_ptr<messenger::IMessenger> m_messenger;
 	
