@@ -1,6 +1,6 @@
 #include "ClientInterface.h"
 #include "Client.h"
-#include "compatibility.h"
+#include "utils.h"
 
 static Client* current_client = nullptr;
 
@@ -10,7 +10,7 @@ int EnterMessenger(wchar_t* login, wchar_t* password, wchar_t* server)
 		return messenger::operation_result::InternalError;
 
 	current_client = new Client;
-	return current_client->EnterMessenger(login, password, server);
+	return current_client->EnterMessenger(ConvertUTF16_UTF8(login), ConvertUTF16_UTF8(password), ConvertUTF16_UTF8(server), 5222);
 }
 
 void ExitMessenger()
@@ -28,9 +28,9 @@ void SendNewMessage(wchar_t* user, wchar_t* message, OnMessageSentCallback callb
 	if (!current_client)
 		return;
 
-	current_client->SendNewMessage(user, message);
-	auto text = current_client->MessagesToText(user);
-	callback(text.c_str());
+	current_client->SendNewMessage(ConvertUTF16_UTF8(user), ConvertUTF16_UTF8(message));
+	auto text = current_client->MessagesToText(ConvertUTF16_UTF8(user));
+	callback(ConvertUTF8_UTF16(text).c_str());
 }
 
 void StartReceiveNewMessages(wchar_t* user, OnMessageReceivedCallback callback)
@@ -42,9 +42,9 @@ void StartReceiveNewMessages(wchar_t* user, OnMessageReceivedCallback callback)
 	bool recv_process = true;
 	while (recv_process)
 	{
-		auto text = current_client->MessagesToText(user);
-		callback(text.c_str());
-		recv_process = current_client->ReadNewMessages(user);
+		auto text = current_client->MessagesToText(ConvertUTF16_UTF8(user));
+		callback(ConvertUTF8_UTF16(text).c_str());
+		recv_process = current_client->ReadNewMessages(ConvertUTF16_UTF8(user));
 	}
 }
 
@@ -66,8 +66,8 @@ void StartGetOnlineUsers(OnUserUpdate callback)
 	{
 		if (!current_client)
 			break;
-		std::wstring listString = current_client->GetActiveUsersString();
-		callback(listString.c_str());
+		std::string listString = current_client->GetActiveUsersString();
+		callback(ConvertUTF8_UTF16(listString).c_str());
 		sleep(1000);
 	}
 }
