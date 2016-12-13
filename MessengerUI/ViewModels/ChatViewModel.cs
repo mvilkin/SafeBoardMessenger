@@ -134,5 +134,10 @@ namespace MessengerUI.ViewModels
             OnlineUsersCtrl.StopUpdating();
             ExitCtrl.Exit();
         }
+
+        void KeyDownHandler(object sender, KeyEventArgs e)
+        {
+            
+        }
     }
 }

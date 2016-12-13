@@ -19,7 +19,12 @@
         </ListBox>
         <TextBox Height="300" Width="500" HorizontalAlignment="Left" Margin="200,20,0,0" Name="TextBoxChat" Text="{Binding ChatViewCtrl.Text, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" />
         <TextBlock Height="30" Width="110" HorizontalAlignment="Left" Margin="210,330,0,0" Name="TextBlockMessage" Text="Message:" FontSize="20" VerticalAlignment="Top" />
-        <TextBox Height="110" Width="500" HorizontalAlignment="Left" Margin="200,370,0,0" Name="TextBoxMessage" Text="{Binding SendMessageCtrl.Text, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" />
+        <TextBox Height="110" Width="500" HorizontalAlignment="Left" Margin="200,370,0,0" Name="TextBoxMessage" Text="{Binding SendMessageCtrl.Text, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <TextBox.InputBindings>
+                <KeyBinding Command="{Binding SendMessageCommand}" Key="Enter" />
+                <KeyBinding Command="{Binding SendMessageCommand}" Key="Return" />
+            </TextBox.InputBindings>
+        </TextBox>
         <Button Height="30" Width="80" HorizontalAlignment="Right" Margin="0,330,50,0" Name="ButtonSend" Content="Send" FontSize="17" VerticalAlignment="Top" Command="{Binding SendMessageCommand}" />
     </Grid>
 </UserControl>
