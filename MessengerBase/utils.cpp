@@ -6,15 +6,41 @@
 #ifdef _WIN32
 
 #include <Windows.h>
+#include <direct.h>
+
 void sleep(int msec)
 {
 	Sleep(msec);
+}
+
+std::string GetCurrentDir()
+{
+	const size_t current_dir_size = 512;
+	char current_dir[current_dir_size];
+	_getcwd(current_dir, current_dir_size);
+	return current_dir;
+}
+
+bool CreateDir(std::string path)
+{
+	return CreateDirectoryA(path.c_str(), NULL) ||
+		ERROR_ALREADY_EXISTS == GetLastError();
 }
 
 #else
 
 void slepp(int msec)
 {
+}
+
+std::string GetCurrentDir()
+{
+	return std::string();
+}
+
+bool CreateDir(std::string path)
+{
+	return false;
 }
 
 #endif

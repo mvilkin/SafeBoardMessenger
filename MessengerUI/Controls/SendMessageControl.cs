@@ -14,6 +14,8 @@ namespace MessengerUI.Controls
         delegate void OnMessageSent(StringBuilder message);
         [DllImport("MessengerBase.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         static extern void SendNewMessage(StringBuilder recipient, StringBuilder text, OnMessageSent callback);
+        [DllImport("MessengerBase.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
+        static extern void SendNewFile(StringBuilder recipient, StringBuilder text, OnMessageSent callback);
 
         private ChatViewControl _chatViewCtrl;
         public ChatViewControl ChatViewCtrl
@@ -36,10 +38,17 @@ namespace MessengerUI.Controls
             set { SetProperty(ref _recipient, value); }
         }
 
-        public void Send()
+        public void SendMessage()
         {
             OnMessageSent callback = message => { ChatViewCtrl.Text = message.ToString(); };
             SendNewMessage(new StringBuilder(Recipient), new StringBuilder(Text), callback);
+            Text = String.Empty;
+        }
+
+        public void SendFile()
+        {
+            OnMessageSent callback = message => { ChatViewCtrl.Text = message.ToString(); };
+            SendNewFile(new StringBuilder(Recipient), new StringBuilder(Text), callback);
             Text = String.Empty;
         }
     }

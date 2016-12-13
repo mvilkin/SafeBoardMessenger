@@ -69,6 +69,7 @@ namespace MessengerUI.ViewModels
         public ExitControl ExitCtrl;
 
         public ICommand SendMessageCommand { get; set; }
+        public ICommand SendFileCommand { get; set; }
         public ICommand UserChosenCommand { get; set; }
 
         public ChatViewModel(IEventAggregator eventAggregator)
@@ -82,7 +83,8 @@ namespace MessengerUI.ViewModels
             SendMessageCtrl.ChatViewCtrl = ChatViewCtrl;
             RecvMessageCtrl.ChatViewCtrl = ChatViewCtrl;
 
-            SendMessageCommand = new DelegateCommand(PerformSend, CanSend).ObservesProperty(() => SelectedUser);
+            SendMessageCommand = new DelegateCommand(PerformSendMessage, CanSend).ObservesProperty(() => SelectedUser);
+            SendFileCommand = new DelegateCommand(PerformSendFile);
             UserChosenCommand = new DelegateCommand(PerformUserChosen).ObservesProperty(() => SelectedUser);
 
             eventAggregator.GetEvent<EnterChatEvent>().Subscribe(EnterChatEventHandler);
@@ -95,9 +97,14 @@ namespace MessengerUI.ViewModels
             return !String.IsNullOrWhiteSpace(SendMessageCtrl.Text) && SelectedUser >= 0;
         }
 
-        private void PerformSend()
+        private void PerformSendMessage()
         {
-            SendMessageCtrl.Send();
+            SendMessageCtrl.SendMessage();
+        }
+
+        private void PerformSendFile()
+        {
+            SendMessageCtrl.SendFile();
         }
 
         private void PerformUserChosen()
@@ -133,11 +140,6 @@ namespace MessengerUI.ViewModels
             RecvMessageCtrl.StopReceiving();
             OnlineUsersCtrl.StopUpdating();
             ExitCtrl.Exit();
-        }
-
-        void KeyDownHandler(object sender, KeyEventArgs e)
-        {
-            
         }
     }
 }

@@ -4,6 +4,8 @@
 #include <string>
 
 void sleep(int msec);
+std::string GetCurrentDir();
+bool CreateDir(std::string path);
 std::wstring ConvertUTF8_UTF16(std::string str);
 std::string ConvertUTF16_UTF8(std::wstring str);
 

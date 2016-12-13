@@ -33,6 +33,16 @@ void SendNewMessage(wchar_t* user, wchar_t* message, OnMessageSentCallback callb
 	callback(ConvertUTF8_UTF16(text).c_str());
 }
 
+void SendNewFile(wchar_t* user, wchar_t* path, OnMessageSentCallback callback)
+{
+	if (!current_client)
+		return;
+
+	current_client->SendNewFile(ConvertUTF16_UTF8(user), ConvertUTF16_UTF8(path));
+	auto text = current_client->MessagesToText(ConvertUTF16_UTF8(user));
+	callback(ConvertUTF8_UTF16(text).c_str());
+}
+
 void StartReceiveNewMessages(wchar_t* user, OnMessageReceivedCallback callback)
 {
 	if (!current_client)

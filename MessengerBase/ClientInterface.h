@@ -21,6 +21,7 @@ extern "C"
 	MSGBASE_API int EnterMessenger(IN wchar_t* login, IN wchar_t* password, IN wchar_t* server);
 	MSGBASE_API void ExitMessenger();
 	MSGBASE_API void SendNewMessage(IN wchar_t* user, IN wchar_t* message, IN OnMessageSentCallback callback);
+	MSGBASE_API void SendNewFile(IN wchar_t* user, IN wchar_t* path, IN OnMessageSentCallback callback);
 	MSGBASE_API void StartReceiveNewMessages(IN wchar_t* user, IN OnMessageReceivedCallback callback);
 	MSGBASE_API void StopReceiveNewMessages();
 	MSGBASE_API void StartGetOnlineUsers(IN OnUserUpdate callback);

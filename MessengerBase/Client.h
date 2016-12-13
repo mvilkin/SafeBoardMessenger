@@ -15,6 +15,7 @@ public:
 	void ExitMessenger();
 
 	void SendNewMessage(messenger::UserId user_id, std::string message);
+	void SendNewFile(messenger::UserId user_id, std::string path);
 	void StartReceivingProcess();
 	void StopReceivingProcess();
 	bool ReadNewMessages(messenger::UserId user_id);
@@ -32,6 +33,9 @@ public:
 	void OnMessageReceived(const messenger::UserId& user_id, const messenger::Message& message) override;
 
 private:
+	static messenger::Data readFileBinary(std::string path);
+	static std::string writeFileBinary(const messenger::Data& data, time_t time);
+
 	std::shared_ptr<messenger::IMessenger> m_messenger;
 	
 	std::mutex m_mutex_init;

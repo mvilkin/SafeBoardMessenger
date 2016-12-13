@@ -1,5 +1,7 @@
 #include "Client.h"
 #include <codecvt>
+#include <fstream>
+#include "utils.h"
 
 Client::Client() :
 	m_is_inited(false),
@@ -56,6 +58,21 @@ void Client::SendNewMessage(messenger::UserId user_id, std::string message)
 	m_map_chat[user_id].push_back(msg);
 }
 
+void Client::SendNewFile(messenger::UserId user_id, std::string path)
+{
+	messenger::MessageContent message_content;
+	message_content.type = messenger::message_content_type::Image;
+	message_content.data = readFileBinary(path);
+
+	messenger::Message msg = m_messenger->SendMessage(user_id, message_content);
+
+	msg.content.data.clear();
+	std::string info = "You sent file: ";
+	std::copy(info.begin(), info.end(), std::back_inserter(msg.content.data));
+	std::copy(path.begin(), path.end(), std::back_inserter(msg.content.data));
+	m_map_chat[user_id].push_back(msg);
+}
+
 void Client::StartReceivingProcess()
 {
 	m_recv_process = true;
@@ -81,6 +98,16 @@ bool Client::ReadNewMessages(messenger::UserId user_id)
 	{
 		m_messenger->SendMessageSeen(user_id, msg.identifier);
 		m_map_msg_statuses[msg.identifier] = messenger::message_status::Seen;
+
+		if (msg.content.type != messenger::message_content_type::Text)
+		{
+			std::string path_file = writeFileBinary(msg.content.data, msg.time);
+			msg.content.data.clear();
+			std::string info = "You received file: ";
+			std::copy(info.begin(), info.end(), std::back_inserter(msg.content.data));
+			std::copy(path_file.begin(), path_file.end(), std::back_inserter(msg.content.data));
+			msg.content.type = messenger::message_content_type::Text;
+		}
 	}
 
 	m_map_chat[user_id].insert(m_map_chat[user_id].end(),
@@ -206,4 +233,36 @@ void Client::OnMessageReceived(const messenger::UserId& user_id, const messenger
 	m_map_new_msg[user_id].push_back(msg);
 
 	m_cv_msg.notify_all();
+}
+
+messenger::Data Client::readFileBinary(std::string path)
+{
+	std::ifstream file(path, std::ios::binary);
+	file.unsetf(std::ios::skipws);
+
+	std::streampos size;
+	file.seekg(0, std::ios::end);
+	size = file.tellg();
+	file.seekg(0, std::ios::beg);
+
+	messenger::Data result;
+	result.reserve(size);
+
+	result.insert(result.begin(),
+		std::istream_iterator<unsigned char>(file),
+		std::istream_iterator<unsigned char>());
+
+	return result;
+}
+
+std::string Client::writeFileBinary(const messenger::Data& data, time_t time)
+{
+	std::string dir_path = GetCurrentDir() + "\\images";
+	std::string file_name = dir_path + "\\image_" + std::to_string(time) + ".png";
+
+	CreateDir(dir_path);
+	std::ofstream file(file_name, std::ios::binary);
+	file.write(reinterpret_cast<const char*>(&data[0]), data.size());
+
+	return file_name;
 }
