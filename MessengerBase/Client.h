@@ -32,8 +32,8 @@ public:
 	void OnMessageReceived(const messenger::UserId& senderId, const messenger::Message& msg) override;
 
 private:
-	std::wstring NormalToWide(std::string string_to_convert);
-	std::string WideToNormal(std::wstring string_to_convert);
+	static std::wstring NormalToWide(std::string string_to_convert);
+	static std::string WideToNormal(std::wstring string_to_convert);
 
 	std::shared_ptr<messenger::IMessenger> m_messenger;
 	std::mutex m_mutex;
