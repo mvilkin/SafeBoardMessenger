@@ -67,7 +67,13 @@ namespace MessengerUI.ViewModels
 
         private static String TranslateEnterCode(int code)
         {
-            return "Sorry, error #" + code + " occured!";
+            if (code == 1)
+                return "Auth Error";
+            if (code == 2)
+                return "Network Error";
+            if (code == 3)
+                return "Internal Error";
+            return "Unknown Error";
         }
 
         private void CloseApplicationHandler()
@@ -84,7 +90,7 @@ namespace MessengerUI.ViewModels
             }
             else
             {
-                MessageBox.Show(TranslateEnterCode(enterCode));
+                MessageBox.Show(TranslateEnterCode(enterCode), "Error");
             }
         }
 
