@@ -89,6 +89,7 @@
   <ItemGroup>
     <ClInclude Include="Client.h" />
     <ClInclude Include="ClientInterface.h" />
+    <ClInclude Include="ClientTypes.h" />
     <ClInclude Include="LocalHistory.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>

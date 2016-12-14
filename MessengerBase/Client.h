@@ -2,36 +2,9 @@
 #define _MESSENGERBASE_CLIENT_H_
 
 #include "messenger.h"
+#include "ClientTypes.h"
 #include <future>
 #include <unordered_map>
-
-namespace ImageType
-{
-	enum Type
-	{
-		bmp,
-		jpg,
-		png,
-		undef
-	};
-}
-
-namespace VideoType
-{
-	enum Type
-	{
-		avi,
-		mkv,
-		undef
-	};
-}
-
-struct ExtensionType
-{
-	messenger::message_content_type::Type type;
-	ImageType::Type image_type;
-	VideoType::Type video_type;
-};
 
 class Client : public messenger::ILoginCallback, messenger::IMessagesObserver, messenger::IRequestUsersCallback
 {
@@ -90,8 +63,8 @@ private:
 	messenger::UserList m_userList;
 
 	std::unordered_map<messenger::MessageId, messenger::message_status::Type> m_map_msg_statuses;
-	std::unordered_map<messenger::UserId, std::vector<messenger::Message> > m_map_chat;
-	std::unordered_map<messenger::UserId, std::vector<messenger::Message> > m_map_new_msg;
+	std::unordered_map<messenger::UserId, std::vector<MessageInfo> > m_map_chat;
+	std::unordered_map<messenger::UserId, std::vector<MessageInfo> > m_map_new_msg;
 };
 
 #endif // _MESSENGERBASE_CLIENT_H_

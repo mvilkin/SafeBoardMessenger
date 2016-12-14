@@ -23,6 +23,9 @@
     <ClInclude Include="LocalHistory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ClientTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Client.cpp">

@@ -31,6 +31,8 @@ int Client::EnterMessenger(std::string login, std::string password, std::string 
 	m_current_user = login;
 	if (m_current_user.find('@') == std::string::npos)
 		m_current_user += "@defualt";
+
+	loadLocalHistory();
 	m_messenger->Login(m_current_user, password, securityPolicy, this);
 
 	m_is_inited = false;
@@ -46,7 +48,6 @@ int Client::EnterMessenger(std::string login, std::string password, std::string 
 		return m_init_result;
 	}
 
-	loadLocalHistory();
 	m_messenger->RegisterObserver(this);
 	return m_init_result;
 }
@@ -89,7 +90,10 @@ void Client::SendNewMessage(messenger::UserId user_id, std::string message)
 
 	messenger::Message msg = m_messenger->SendMessage(user_id, message_content);
 
-	m_map_chat[user_id].push_back(msg);
+	MessageInfo info;
+	info.message = msg;
+	info.type = MessageDirection::send;
+	m_map_chat[user_id].push_back(info);
 }
 
 void Client::SendNewFile(messenger::UserId user_id, std::string path)
@@ -98,13 +102,15 @@ void Client::SendNewFile(messenger::UserId user_id, std::string path)
 	message_content.type = messenger::message_content_type::Image;
 	message_content.data = readFileBinary(path);
 
-	messenger::Message msg = m_messenger->SendMessage(user_id, message_content);
+	MessageInfo message_info;
+	message_info.type = MessageDirection::send;
+	message_info.message = m_messenger->SendMessage(user_id, message_content);
 
-	msg.content.data.clear();
+	message_info.message.content.data.clear();
 	std::string info = "You sent file: ";
-	std::copy(info.begin(), info.end(), std::back_inserter(msg.content.data));
-	std::copy(path.begin(), path.end(), std::back_inserter(msg.content.data));
-	m_map_chat[user_id].push_back(msg);
+	std::copy(info.begin(), info.end(), std::back_inserter(message_info.message.content.data));
+	std::copy(path.begin(), path.end(), std::back_inserter(message_info.message.content.data));
+	m_map_chat[user_id].push_back(message_info);
 }
 
 void Client::StartReceivingProcess()
@@ -130,17 +136,18 @@ bool Client::ReadNewMessages(messenger::UserId user_id)
 
 	for (auto& msg : m_map_new_msg[user_id])
 	{
-		m_messenger->SendMessageSeen(user_id, msg.identifier);
-		m_map_msg_statuses[msg.identifier] = messenger::message_status::Seen;
+		m_messenger->SendMessageSeen(user_id, msg.message.identifier);
+		m_map_msg_statuses[msg.message.identifier] = messenger::message_status::Seen;
 
-		if (msg.content.type != messenger::message_content_type::Text)
+		if (msg.message.content.type != messenger::message_content_type::Text)
 		{
-			std::string path_file = writeFileBinary(msg.content.data, msg.time);
-			msg.content.data.clear();
+			std::string path_file = writeFileBinary(msg.message.content.data, msg.message.time);
+			msg.message.content.data.clear();
 			std::string info = "You received file: ";
-			std::copy(info.begin(), info.end(), std::back_inserter(msg.content.data));
-			std::copy(path_file.begin(), path_file.end(), std::back_inserter(msg.content.data));
-			msg.content.type = messenger::message_content_type::Text;
+			std::copy(info.begin(), info.end(), std::back_inserter(msg.message.content.data));
+			std::copy(path_file.begin(), path_file.end(), std::back_inserter(msg.message.content.data));
+			msg.message.content.type = messenger::message_content_type::Text;
+			msg.type = MessageDirection::recv;
 		}
 	}
 
@@ -161,10 +168,14 @@ std::string Client::MessagesToText(messenger::UserId user_id)
 	for (auto& msg : m_map_chat[user_id])
 	{
 		std::string text;
-		text.assign(reinterpret_cast<const char*>(&msg.content.data[0]), msg.content.data.size());
-		if (m_map_msg_statuses[msg.identifier] == messenger::message_status::FailedToSend)
+		text.assign(reinterpret_cast<const char*>(&msg.message.content.data[0]), msg.message.content.data.size());
+		if (msg.type == MessageDirection::send)
+			text = "[out] " + text;
+		else
+			text = "[in] " + text;
+		if (m_map_msg_statuses[msg.message.identifier] == messenger::message_status::FailedToSend)
 			text += " *** Failed to send ***";
-		else if (m_map_msg_statuses[msg.identifier] != messenger::message_status::Seen)
+		else if (m_map_msg_statuses[msg.message.identifier] != messenger::message_status::Seen)
 			text += " *** Not seen yet ***";
 		result += text + "\n";
 	}
@@ -258,12 +269,13 @@ void Client::OnMessageReceived(const messenger::UserId& user_id, const messenger
 {
 	std::unique_lock<std::mutex> lock(m_mutex_msg);
 
-	messenger::Message msg;
-	msg.identifier = message.identifier;
-	msg.time = message.time;
-	msg.content.type = message.content.type;
-	msg.content.encrypted = message.content.encrypted;
-	msg.content.data = message.content.data;
+	MessageInfo msg;
+	msg.message.identifier = message.identifier;
+	msg.message.time = message.time;
+	msg.message.content.type = message.content.type;
+	msg.message.content.encrypted = message.content.encrypted;
+	msg.message.content.data = message.content.data;
+	msg.type = MessageDirection::recv;
 	m_map_new_msg[user_id].push_back(msg);
 
 	m_cv_msg.notify_all();

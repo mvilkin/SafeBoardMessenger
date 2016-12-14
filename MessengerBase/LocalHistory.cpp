@@ -39,26 +39,32 @@ void SaveMessageStatuses(std::ofstream& file, const std::unordered_map<messenger
 	file << msg_statuses_end << "\n";
 }
 
-void SaveCurrentChats(std::ofstream& file, const std::unordered_map<messenger::UserId, std::vector<messenger::Message> >& chat)
+void SaveCurrentChats(std::ofstream& file, const std::unordered_map<messenger::UserId, std::vector<MessageInfo> >& chat)
 {
 	for (auto& record : chat)
 	{
 		file << record.first << "\n";
 		file << record.second.size() << "\n";
 		for (auto& msg : record.second)
-			save_message(file, msg);
+		{
+			file << msg.type << "\n";
+			save_message(file, msg.message);
+		}
 	}
 	file << current_chat_end << "\n";
 }
 
-void SaveNewMessages(std::ofstream& file, const std::unordered_map<messenger::UserId, std::vector<messenger::Message> >& new_messages)
+void SaveNewMessages(std::ofstream& file, const std::unordered_map<messenger::UserId, std::vector<MessageInfo> >& new_messages)
 {
 	for (auto& record : new_messages)
 	{
 		file << record.first << "\n";
 		file << record.second.size() << "\n";
 		for (auto& msg : record.second)
-			save_message(file, msg);
+		{
+			file << msg.type << "\n";
+			save_message(file, msg.message);
+		}
 	}
 	file << new_messages_end << "\n";
 }
@@ -77,7 +83,7 @@ void LoadMessageStatuses(std::ifstream& file, std::unordered_map<messenger::Mess
 	}
 }
 
-void LoadCurrentChats(std::ifstream& file, std::unordered_map<messenger::UserId, std::vector<messenger::Message> >& chat)
+void LoadCurrentChats(std::ifstream& file, std::unordered_map<messenger::UserId, std::vector<MessageInfo> >& chat)
 {
 	std::string user_id;
 	std::getline(file, user_id);
@@ -87,16 +93,23 @@ void LoadCurrentChats(std::ifstream& file, std::unordered_map<messenger::UserId,
 		std::getline(file, num_records_str);
 		size_t num_records = std::stoi(num_records_str);
 
-		std::vector<messenger::Message> records;
+		std::vector<MessageInfo> records;
 		while (num_records--)
-			records.push_back(std::move(load_message(file)));
+		{
+			MessageInfo info;
+			std::string type_str;
+			std::getline(file, type_str);
+			info.type = static_cast<MessageDirection::Type>(std::stoi(type_str));
+			info.message = load_message(file);
+			records.push_back(std::move(info));
+		}
 		chat[user_id] = records;
 
 		std::getline(file, user_id);
 	}
 }
 
-void LoadNewMessages(std::ifstream& file, std::unordered_map<messenger::UserId, std::vector<messenger::Message> >& new_messages)
+void LoadNewMessages(std::ifstream& file, std::unordered_map<messenger::UserId, std::vector<MessageInfo> >& new_messages)
 {
 	std::string user_id;
 	std::getline(file, user_id);
@@ -106,9 +119,16 @@ void LoadNewMessages(std::ifstream& file, std::unordered_map<messenger::UserId, 
 		std::getline(file, num_records_str);
 		size_t num_records = std::stoi(num_records_str);
 
-		std::vector<messenger::Message> records;
+		std::vector<MessageInfo> records;
 		while (num_records--)
-			records.push_back(std::move(load_message(file)));
+		{
+			MessageInfo info;
+			std::string type_str;
+			std::getline(file, type_str);
+			info.type = static_cast<MessageDirection::Type>(std::stoi(type_str));
+			info.message = load_message(file);
+			records.push_back(std::move(info));
+		}
 		new_messages[user_id] = records;
 
 		std::getline(file, user_id);
