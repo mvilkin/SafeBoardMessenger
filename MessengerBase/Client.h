@@ -63,7 +63,7 @@ public:
 private:
 	void saveLocalHistory() const;
 	void loadLocalHistory();
-	std::string m_local_history_path = "local_history.dat";
+	std::string m_local_history_path_base = "local_history";
 
 	static messenger::Data readFileBinary(std::string path);
 	static std::string writeFileBinary(const messenger::Data& data, time_t time);
@@ -71,6 +71,7 @@ private:
 	static std::string detectFileExtension(const messenger::Data& data);
 	static ExtensionType detectFileExtensionType(const messenger::Data& data);
 
+	std::string m_current_user;
 	std::shared_ptr<messenger::IMessenger> m_messenger;
 	
 	std::mutex m_mutex_init;

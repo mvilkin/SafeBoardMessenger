@@ -28,10 +28,10 @@ int Client::EnterMessenger(std::string login, std::string password, std::string 
 	m_messenger = messenger::GetMessengerInstance(settings);
 
 	messenger::SecurityPolicy securityPolicy;
-	std::string full_login = login;
-	if (full_login.find('@') == std::string::npos)
-		full_login += "@defualt";
-	m_messenger->Login(full_login, password, securityPolicy, this);
+	m_current_user = login;
+	if (m_current_user.find('@') == std::string::npos)
+		m_current_user += "@defualt";
+	m_messenger->Login(m_current_user, password, securityPolicy, this);
 
 	m_is_inited = false;
 	std::unique_lock<std::mutex> lock(m_mutex_init);
@@ -61,7 +61,9 @@ void Client::ExitMessenger()
 
 void Client::saveLocalHistory() const
 {
-	std::ofstream file(m_local_history_path);
+	std::string path = m_local_history_path_base + "." + m_current_user;
+	std::ofstream file(path);
+
 	SaveMessageStatuses(file, m_map_msg_statuses);
 	SaveCurrentChats(file, m_map_chat);
 	SaveNewMessages(file, m_map_new_msg);
@@ -69,7 +71,11 @@ void Client::saveLocalHistory() const
 
 void Client::loadLocalHistory()
 {
-	std::ifstream file(m_local_history_path);
+	std::string path = m_local_history_path_base + "." + m_current_user;
+	std::ifstream file(path);
+	if (!file.good())
+		return;
+
 	LoadMessageStatuses(file, m_map_msg_statuses);
 	LoadCurrentChats(file, m_map_chat);
 	LoadNewMessages(file, m_map_new_msg);
