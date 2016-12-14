@@ -170,9 +170,9 @@ std::string Client::MessagesToText(messenger::UserId user_id)
 		std::string text;
 		text.assign(reinterpret_cast<const char*>(&msg.message.content.data[0]), msg.message.content.data.size());
 		if (msg.type == MessageDirection::send)
-			text = "[out] " + text;
+			text = "[out, " + std::to_string(msg.message.time) + "] " + text;
 		else
-			text = "[in] " + text;
+			text = "[in,  " + std::to_string(msg.message.time) + "] " + text;
 		if (m_map_msg_statuses[msg.message.identifier] == messenger::message_status::FailedToSend)
 			text += " *** Failed to send ***";
 		else if (m_map_msg_statuses[msg.message.identifier] != messenger::message_status::Seen)

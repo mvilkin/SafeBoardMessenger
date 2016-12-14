@@ -54,7 +54,10 @@ namespace MessengerUI.Controls
             {
                 MessageBox.Show("File not exist", "Error");
             }
-            Text = String.Empty;
+            else
+            {
+                Text = String.Empty;
+            }
         }
     }
 }
