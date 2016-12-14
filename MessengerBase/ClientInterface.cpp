@@ -11,7 +11,15 @@ int EnterMessenger(wchar_t* login, wchar_t* password, wchar_t* server, int port)
 		return messenger::operation_result::InternalError;
 
 	current_client = new Client;
-	return current_client->EnterMessenger(ConvertUTF16_UTF8(login), ConvertUTF16_UTF8(password), ConvertUTF16_UTF8(server), port);
+	auto result =  current_client->EnterMessenger(ConvertUTF16_UTF8(login), ConvertUTF16_UTF8(password), ConvertUTF16_UTF8(server), port);
+
+	if (result != messenger::operation_result::Ok)
+	{
+		delete current_client;
+		current_client = nullptr;
+	}
+
+	return result;
 }
 
 void ExitMessenger()

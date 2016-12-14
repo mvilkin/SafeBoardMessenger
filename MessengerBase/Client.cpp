@@ -136,8 +136,8 @@ bool Client::ReadNewMessages(messenger::UserId user_id)
 
 	for (auto& msg : m_map_new_msg[user_id])
 	{
-		m_messenger->SendMessageSeen(user_id, msg.message.identifier);
 		m_map_msg_statuses[msg.message.identifier] = messenger::message_status::Seen;
+		m_messenger->SendMessageSeen(user_id, msg.message.identifier);
 
 		if (msg.message.content.type != messenger::message_content_type::Text)
 		{
@@ -173,10 +173,13 @@ std::string Client::MessagesToText(messenger::UserId user_id)
 			text = "[out, " + TimeToString(msg.message.time) + "] : " + text;
 		else
 			text = "[in,   " + TimeToString(msg.message.time) + "] : " + text;
-		if (m_map_msg_statuses[msg.message.identifier] == messenger::message_status::FailedToSend)
-			text += " *** Failed to send ***";
-		else if (m_map_msg_statuses[msg.message.identifier] != messenger::message_status::Seen)
-			text += " *** Not seen yet ***";
+		if (msg.type == MessageDirection::send)
+		{
+			if (m_map_msg_statuses[msg.message.identifier] == messenger::message_status::FailedToSend)
+				text += " *** Failed to send ***";
+			else if (m_map_msg_statuses[msg.message.identifier] != messenger::message_status::Seen)
+				text += " *** Not seen yet ***";
+		}
 		result += text + "\n";
 	}
 
