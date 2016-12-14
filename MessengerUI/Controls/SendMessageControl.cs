@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using Prism.Mvvm;
 
 namespace MessengerUI.Controls
@@ -15,7 +16,7 @@ namespace MessengerUI.Controls
         [DllImport("MessengerBase.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
         static extern void SendNewMessage(StringBuilder recipient, StringBuilder text, OnMessageSent callback);
         [DllImport("MessengerBase.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        static extern void SendNewFile(StringBuilder recipient, StringBuilder text, OnMessageSent callback);
+        static extern int SendNewFile(StringBuilder recipient, StringBuilder text, OnMessageSent callback);
 
         private ChatViewControl _chatViewCtrl;
         public ChatViewControl ChatViewCtrl
@@ -48,7 +49,11 @@ namespace MessengerUI.Controls
         public void SendFile()
         {
             OnMessageSent callback = message => { ChatViewCtrl.Text = message.ToString(); };
-            SendNewFile(new StringBuilder(Recipient), new StringBuilder(Text), callback);
+            var retcode = SendNewFile(new StringBuilder(Recipient), new StringBuilder(Text), callback);
+            if (retcode != 0)
+            {
+                MessageBox.Show("File not exist", "Error");
+            }
             Text = String.Empty;
         }
     }

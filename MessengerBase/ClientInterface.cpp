@@ -1,3 +1,4 @@
+#include <fstream>
 #include "ClientInterface.h"
 #include "Client.h"
 #include "utils.h"
@@ -33,14 +34,19 @@ void SendNewMessage(wchar_t* user, wchar_t* message, OnMessageSentCallback callb
 	callback(ConvertUTF8_UTF16(text).c_str());
 }
 
-void SendNewFile(wchar_t* user, wchar_t* path, OnMessageSentCallback callback)
+int SendNewFile(wchar_t* user, wchar_t* path, OnMessageSentCallback callback)
 {
 	if (!current_client)
-		return;
+		return 0;
+
+	std::ifstream file(path);
+	if (!file.good())
+		return 1;
 
 	current_client->SendNewFile(ConvertUTF16_UTF8(user), ConvertUTF16_UTF8(path));
 	auto text = current_client->MessagesToText(ConvertUTF16_UTF8(user));
 	callback(ConvertUTF8_UTF16(text).c_str());
+	return 0;
 }
 
 void StartReceiveNewMessages(wchar_t* user, OnMessageReceivedCallback callback)
