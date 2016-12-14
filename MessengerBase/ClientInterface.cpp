@@ -4,13 +4,13 @@
 
 static Client* current_client = nullptr;
 
-int EnterMessenger(wchar_t* login, wchar_t* password, wchar_t* server)
+int EnterMessenger(wchar_t* login, wchar_t* password, wchar_t* server, int port)
 {
 	if (!!current_client)
 		return messenger::operation_result::InternalError;
 
 	current_client = new Client;
-	return current_client->EnterMessenger(ConvertUTF16_UTF8(login), ConvertUTF16_UTF8(password), ConvertUTF16_UTF8(server), 5222);
+	return current_client->EnterMessenger(ConvertUTF16_UTF8(login), ConvertUTF16_UTF8(password), ConvertUTF16_UTF8(server), port);
 }
 
 void ExitMessenger()

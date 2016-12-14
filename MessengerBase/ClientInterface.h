@@ -18,7 +18,7 @@ extern "C"
 	typedef char* (__stdcall * OnMessageSentCallback)(const wchar_t*);
 	typedef char* (__stdcall * OnUserUpdate)(const wchar_t*);
 
-	MSGBASE_API int EnterMessenger(IN wchar_t* login, IN wchar_t* password, IN wchar_t* server);
+	MSGBASE_API int EnterMessenger(IN wchar_t* login, IN wchar_t* password, IN wchar_t* server, IN int port);
 	MSGBASE_API void ExitMessenger();
 	MSGBASE_API void SendNewMessage(IN wchar_t* user, IN wchar_t* message, IN OnMessageSentCallback callback);
 	MSGBASE_API void SendNewFile(IN wchar_t* user, IN wchar_t* path, IN OnMessageSentCallback callback);

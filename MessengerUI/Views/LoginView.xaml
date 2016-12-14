@@ -20,8 +20,8 @@
             <TextBlock Height="40" Width="110" FontSize="20" HorizontalAlignment="Left" Margin="67,300,0,0" Name="TextBlockServer" Text="Server:" VerticalAlignment="Top"/>
             <TextBox Height="40" Width="222" FontSize="20" HorizontalAlignment="Left" Margin="183,300,0,0" Name="TextBoxServer" Text="{Binding LoginCtrl.Server, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top"/>
 
-            <TextBlock Height="40" Width="110" FontSize="20" HorizontalAlignment="Left" Margin="67,400,0,0" Name="TextBlockPort" Text="Server:" VerticalAlignment="Top"/>
-            <TextBox Height="40" Width="222" FontSize="20" HorizontalAlignment="Left" Margin="183,400,0,0" Name="TextBoxPort" Text="5222" VerticalAlignment="Top"/>
+            <TextBlock Height="40" Width="110" FontSize="20" HorizontalAlignment="Left" Margin="67,400,0,0" Name="TextBlockPort" Text="Port:" VerticalAlignment="Top"/>
+            <TextBox Height="40" Width="222" FontSize="20" HorizontalAlignment="Left" Margin="183,400,0,0" Name="TextBoxPort" Text="{Binding LoginCtrl.Port, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top"/>
 
             <Button Content="Enter" Height="40" Width="100" FontSize="20" HorizontalAlignment="Right" Margin="0,420,100,0" Name="ButtonEnterChat" VerticalAlignment="Top" Command="{Binding EnterChatCommand}" />
         </Grid>

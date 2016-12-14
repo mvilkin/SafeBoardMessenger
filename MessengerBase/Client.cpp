@@ -28,7 +28,10 @@ int Client::EnterMessenger(std::string login, std::string password, std::string 
 	m_messenger = messenger::GetMessengerInstance(settings);
 
 	messenger::SecurityPolicy securityPolicy;
-	m_messenger->Login(login, password, securityPolicy, this);
+	std::string full_login = login;
+	if (full_login.find('@') == std::string::npos)
+		full_login += "@defualt";
+	m_messenger->Login(full_login, password, securityPolicy, this);
 
 	m_is_inited = false;
 	std::unique_lock<std::mutex> lock(m_mutex_init);

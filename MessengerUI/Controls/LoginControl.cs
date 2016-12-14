@@ -12,16 +12,16 @@ namespace MessengerUI.Controls
     public class LoginControl : BindableBase
     {
         [DllImport("MessengerBase.dll", CharSet = CharSet.Unicode, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int EnterMessenger(StringBuilder login, StringBuilder password, StringBuilder server);
+        public static extern int EnterMessenger(StringBuilder login, StringBuilder password, StringBuilder server, int port);
 
-        private String _login = "1@local";
+        private String _login = "login";
         public String Login
         {
             get { return _login; }
             set { SetProperty(ref _login, value); }
         }
 
-        private String _password = "1";
+        private String _password = "pwd";
         public String Password
         {
             get { return _password; }
@@ -35,9 +35,16 @@ namespace MessengerUI.Controls
             set { SetProperty(ref _server, value); }
         }
 
+        private int _port = 5222;
+        public int Port
+        {
+            get { return _port; }
+            set { SetProperty(ref _port, value); }
+        }
+
         public int EnterChat()
         {
-            return EnterMessenger(new StringBuilder(Login), new StringBuilder(Password), new StringBuilder(Server));
+            return EnterMessenger(new StringBuilder(Login), new StringBuilder(Password), new StringBuilder(Server), Port);
         }
     }
 }
