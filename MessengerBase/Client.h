@@ -61,6 +61,10 @@ public:
 	void OnMessageReceived(const messenger::UserId& user_id, const messenger::Message& message) override;
 
 private:
+	void saveLocalHistory() const;
+	void loadLocalHistory();
+	std::string m_local_history_path = "local_history.dat";
+
 	static messenger::Data readFileBinary(std::string path);
 	static std::string writeFileBinary(const messenger::Data& data, time_t time);
 	static messenger::message_content_type::Type detectFileContentType(const messenger::Data& data);

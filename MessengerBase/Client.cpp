@@ -2,6 +2,7 @@
 #include <codecvt>
 #include <fstream>
 #include "utils.h"
+#include "LocalHistory.h"
 
 Client::Client() :
 	m_is_inited(false),
@@ -36,15 +37,39 @@ int Client::EnterMessenger(std::string login, std::string password, std::string 
 		m_cv_init.wait(lock);
 	}
 
+	if (m_init_result != messenger::operation_result::Ok)
+	{
+		ExitMessenger();
+		return m_init_result;
+	}
+
+	loadLocalHistory();
 	m_messenger->RegisterObserver(this);
 	return m_init_result;
 }
 
 void Client::ExitMessenger()
 {
+	saveLocalHistory();
 	m_messenger->UnregisterObserver(this);
 	m_messenger->Disconnect();
 	m_messenger.reset();
+}
+
+void Client::saveLocalHistory() const
+{
+	std::ofstream file(m_local_history_path);
+	SaveMessageStatuses(file, m_map_msg_statuses);
+	SaveCurrentChats(file, m_map_chat);
+	SaveNewMessages(file, m_map_new_msg);
+}
+
+void Client::loadLocalHistory()
+{
+	std::ifstream file(m_local_history_path);
+	LoadMessageStatuses(file, m_map_msg_statuses);
+	LoadCurrentChats(file, m_map_chat);
+	LoadNewMessages(file, m_map_new_msg);
 }
 
 void Client::SendNewMessage(messenger::UserId user_id, std::string message)
@@ -334,7 +359,7 @@ messenger::Data Client::readFileBinary(std::string path)
 	file.seekg(0, std::ios::beg);
 
 	messenger::Data result;
-	result.reserve(size);
+	result.reserve(static_cast<size_t>(size));
 
 	result.insert(result.begin(),
 		std::istream_iterator<unsigned char>(file),
