@@ -12,5 +12,6 @@ std::wstring ConvertUTF8_UTF16(std::string str);
 std::string ConvertUTF16_UTF8(std::wstring str);
 std::string Base64_encode(const std::vector<unsigned char>& data);
 std::vector<unsigned char> Base64_decode(const std::string& data);
+std::string TimeToString(time_t time);
 
 #endif // _MESSENGERBASE_UTILS_H_

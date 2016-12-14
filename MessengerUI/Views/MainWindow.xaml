@@ -4,7 +4,7 @@
         xmlns:prism="http://prismlibrary.com/"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         prism:ViewModelLocator.AutoWireViewModel="True"
-        Title="MainWindow" 
+        Title="Messenger" 
         Height="600" MinHeight="600" MaxHeight="600"
         Width="800" MinWidth="800" MaxWidth="800">
     

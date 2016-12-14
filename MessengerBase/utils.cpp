@@ -1,5 +1,6 @@
 #include "utils.h"
 #include <codecvt>
+#include <ctime>
 
 ////////////////////////////////////////////
 
@@ -166,4 +167,13 @@ std::vector<unsigned char> Base64_decode(const std::string& data)
 	}
 
 	return ret;
+}
+
+std::string TimeToString(time_t time)
+{
+	std::tm ptm;
+	localtime_s(&ptm, &time);
+	char buffer[32];
+	std::strftime(buffer, 32, "%a, %d.%m.%Y %H:%M:%S", &ptm);
+	return buffer;
 }
